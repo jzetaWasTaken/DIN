@@ -11,12 +11,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="200.0" maxWidth="330.0" minHeight="147.0" minWidth="330.0" prefHeight="151.0" prefWidth="330.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gestion_bancaria.UI.controller.Log_inController">
+<Pane maxHeight="200.0" maxWidth="330.0" minHeight="147.0" minWidth="330.0" prefHeight="151.0" prefWidth="330.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane hgap="10.0" layoutX="28.0" layoutY="8.0" prefHeight="129.0" prefWidth="281.0" vgap="10.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="86.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="185.0" minWidth="10.0" prefWidth="185.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="69.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" prefWidth="202.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -24,18 +24,18 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="User name" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="User ID" wrappingWidth="84.63037109375" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password" GridPane.rowIndex="1" />
-            <TextField prefHeight="26.0" prefWidth="132.0" GridPane.columnIndex="1" />
-            <PasswordField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField prefHeight="26.0" prefWidth="132.0" promptText="11111111X" GridPane.columnIndex="1" />
+            <PasswordField promptText="Enter password" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
-                  <Button id="btnCancel" mnemonicParsing="false" text="Cancel">
+                  <Button mnemonicParsing="false" text="Cancel">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button id="btnSingIn" mnemonicParsing="false" text="Sign in" />
+                  <Button mnemonicParsing="false" text="Sign in" />
                </children>
             </HBox>
          </children>
