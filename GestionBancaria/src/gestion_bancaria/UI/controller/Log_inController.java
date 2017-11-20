@@ -27,7 +27,7 @@ import javafx.stage.WindowEvent;
 public class Log_inController {
 
     private static final String TITLE = "Log in";
-    private static final Logger logger = Logger.getLogger("gestion_bancaria.UI.controller");
+    private static final Logger LOGGER = Logger.getLogger("gestion_bancaria.UI.controller");
     private Stage stage;  
     
     @FXML
@@ -48,7 +48,7 @@ public class Log_inController {
     }
     
     public void initStage(Parent root) {
-        logger.info("Initializing Login Window");
+        LOGGER.info("Initializing Login Window");
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle(TITLE);
