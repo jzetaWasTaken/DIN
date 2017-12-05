@@ -6,31 +6,50 @@
 package gestionbancariaserver.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author ubuntu
  */
 @Entity
+@Table(name="CUSTOMER", schema="BANK_MANAGEMENT_DB")
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+            
+    @NotNull
+    @Column(name="LAST_NAME")
     private String lastName;
+    
+    @NotNull
+    @Column(name="FIRST_NAME")
     private String firstName;
+            
     private String street;
+    
     private String city;
+    
     private String state;
+    
     private String zip;
+    
     private String phone;
+    
     private String email;
+    
     private Credential credentials;
+    
     private Collection<Account> accounts;
 
     public Integer getId() {
@@ -112,14 +131,15 @@ public class Customer implements Serializable {
     public void setCredentials(Credential credentials) {
         this.credentials = credentials;
     }
-
-    public <any> getAccounts() {
+    
+    public Collection<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(<any> accounts) {
+    public void setAccounts(Collection<Account> accounts) {
         this.accounts = accounts;
     }
+    
 
     @Override
     public int hashCode() {
