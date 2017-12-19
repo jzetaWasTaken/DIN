@@ -13,9 +13,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import static javax.persistence.EnumType.STRING;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
@@ -56,8 +56,10 @@ public class Account implements Serializable {
     @Column(name="BEGIN_BALANCE_DATE")
     private Date beginBalanceDate;
     
+    @ManyToMany(mappedBy = "accounts")
     private Collection<Customer> customers;
     
+    @OneToMany(mappedBy = "account", fetch = javax.persistence.FetchType.LAZY)
     private Collection<Transaction> transactions;
     
     public Integer getAccountId() {

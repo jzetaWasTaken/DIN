@@ -7,13 +7,22 @@ package gestionbancariaserver.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -26,7 +35,8 @@ public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @Column(name="ID")
+    private Long id;
             
     @NotNull
     @Column(name="LAST_NAME")
@@ -40,23 +50,47 @@ public class Customer implements Serializable {
     
     private String city;
     
-    private String state;
+    private String nation;
     
+    //TODO pattern zip
+    @Pattern(regexp = "",
+            message = "Invalid zip format")
     private String zip;
     
+    //TODO pattern phone
+    @Pattern(regexp = "",
+            message = "Invalid phone format")
     private String phone;
     
+    //TODO pattern email
+    @Pattern(regexp = "",
+            message = "Invalid email format")
     private String email;
     
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Past
+    @Column(name="BIRTH_DATE")
+    private Date birthDate;;
+    
+    @OneToOne(cascade=javax.persistence.CascadeType.ALL,
+            fetch=javax.persistence.FetchType.LAZY)
+    @MapsId
     private Credential credentials;
     
+    @ManyToMany(fetch=javax.persistence.FetchType.LAZY)
+    @JoinTable(name="CUSTOMER_ACCOUNTS",
+            joinColumns=
+                    @JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
+            inverseJoinColumns=
+                    @JoinColumn(name="ACCOUNT_ID", referencedColumnName="ACCOUNT_ID")
+            )
     private Collection<Account> accounts;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -92,12 +126,20 @@ public class Customer implements Serializable {
         this.city = city;
     }
 
-    public String getState() {
-        return state;
+    public String getNation() {
+        return nation;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getZip() {
@@ -139,7 +181,6 @@ public class Customer implements Serializable {
     public void setAccounts(Collection<Account> accounts) {
         this.accounts = accounts;
     }
-    
 
     @Override
     public int hashCode() {

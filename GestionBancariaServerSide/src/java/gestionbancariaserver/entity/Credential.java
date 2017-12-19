@@ -12,6 +12,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -25,10 +28,23 @@ public class Credential implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    //TODO login regexp
+    @NotNull
+    @Pattern(regexp="",
+            message="Invalid login format")
     private String login;
+    
+    @NotNull
     private String passw;
+            
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastModifiedOn;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastSignedIn;
+    
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date createdOn;
 
     public Long getId() {
@@ -78,8 +94,6 @@ public class Credential implements Serializable {
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
-    
-    
 
     @Override
     public int hashCode() {

@@ -15,6 +15,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
@@ -25,7 +27,7 @@ import javax.validation.constraints.NotNull;
  * @author ubuntu
  */
 @Entity
-@Table(name="TRANSACTION", schema="BANK_MANAGEMENT_DB")
+@Table(name="BANK_TRANSACTION", schema="BANK_MANAGEMENT_DB")
 public class Transaction implements Serializable {
 
     public static enum TransactionType {DEPOSIT, TRANSFER, PAYMENT}
@@ -52,7 +54,8 @@ public class Transaction implements Serializable {
     @Enumerated(STRING)
     private TransactionType type;
     
-    
+    @ManyToOne(fetch=javax.persistence.FetchType.LAZY)
+    @JoinColumn(name="ACCOUNT_ID", nullable=false)
     private Account account;
 
     public Integer getTransactionId() {
