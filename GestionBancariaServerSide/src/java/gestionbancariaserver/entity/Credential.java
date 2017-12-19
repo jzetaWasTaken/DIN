@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
@@ -22,6 +24,14 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(name="CREDENTIAL", schema="BANK_MANAGEMENT_DB")
+@NamedQueries({
+    @NamedQuery(
+        name="countByLoginPassw",
+        query="SELECT COUNT(c) FROM Credential AS c WHERE c.login = :login AND c.passw = :passw"),
+    @NamedQuery(
+        name="findIdByLoginPassw",
+        query="SELECT c.id FROM Credential AS c WHERE c.login = :login AND c.passw = :passw")
+})
 public class Credential implements Serializable {
 
     private static final long serialVersionUID = 1L;

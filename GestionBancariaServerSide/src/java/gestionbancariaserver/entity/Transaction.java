@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
@@ -28,6 +30,29 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name="BANK_TRANSACTION", schema="BANK_MANAGEMENT_DB")
+@NamedQueries({
+    @NamedQuery(
+        name="findTransactionsByAccount",
+        query="SELECT t FROM Transaction AS t WHERE t.account = :account"),
+    @NamedQuery(
+        name="findDepositsByAccount",
+        query="SELECT t "+ 
+              "FROM Transaction AS t "+
+              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.DEPOSIT "+
+              "AND t.account = :account"),
+    @NamedQuery(
+        name="findTransfersByAccount",
+        query="SELECT t "+ 
+              "FROM Transaction AS t "+
+              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.TRANSFER "+
+              "AND t.account = :account"),
+    @NamedQuery(
+        name="findPaymentsByAccount",
+        query="SELECT t "+ 
+              "FROM Transaction AS t "+
+              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "+
+              "AND t.account = :account"),
+})
 public class Transaction implements Serializable {
 
     public static enum TransactionType {DEPOSIT, TRANSFER, PAYMENT}

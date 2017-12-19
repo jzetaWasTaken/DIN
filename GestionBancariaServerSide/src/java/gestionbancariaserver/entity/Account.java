@@ -15,6 +15,8 @@ import static javax.persistence.EnumType.STRING;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -27,6 +29,11 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name="ACCOUNT", schema="BANK_MANAGEMENT_DB")
+@NamedQueries({
+    @NamedQuery(
+            name="findAccountsByCustomerId",
+            query="SELECT a FROM Account AS a, IN (a.customers) AS c WHERE c.id = :id")
+})
 public class Account implements Serializable {
 
     public static enum AccountType {SAVINGS, CHECK, CREDIT, IPF}
