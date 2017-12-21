@@ -23,6 +23,8 @@ import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,6 +32,7 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(name="CUSTOMER", schema="BANK_MANAGEMENT_DB")
+@XmlRootElement
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -174,6 +177,7 @@ public class Customer implements Serializable {
         this.credentials = credentials;
     }
     
+    @XmlTransient
     public Collection<Account> getAccounts() {
         return accounts;
     }

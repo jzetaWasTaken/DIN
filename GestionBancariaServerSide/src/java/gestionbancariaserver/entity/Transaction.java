@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -53,6 +54,7 @@ import javax.validation.constraints.NotNull;
               "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "+
               "AND t.account = :account"),
 })
+@XmlRootElement
 public class Transaction implements Serializable {
 
     public static enum TransactionType {DEPOSIT, TRANSFER, PAYMENT}

@@ -22,6 +22,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,6 +36,7 @@ import javax.validation.constraints.NotNull;
             name="findAccountsByCustomerId",
             query="SELECT a FROM Account AS a, IN (a.customers) AS c WHERE c.id = :id")
 })
+@XmlRootElement
 public class Account implements Serializable {
 
     public static enum AccountType {SAVINGS, CHECK, CREDIT, IPF}
@@ -125,6 +128,7 @@ public class Account implements Serializable {
         this.beginBalanceDate = beginBalanceDate;
     }
 
+    @XmlTransient
     public Collection<Customer> getCustomers() {
         return customers;
     }
@@ -133,6 +137,7 @@ public class Account implements Serializable {
         this.customers = customers;
     }
 
+    @XmlTransient
     public Collection<Transaction> getTransactions() {
         return transactions;
     }
