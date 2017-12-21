@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -32,6 +33,7 @@ import javax.validation.constraints.Pattern;
         name="findIdByLoginPassw",
         query="SELECT c.id FROM Credential AS c WHERE c.login = :login AND c.passw = :passw")
 })
+@XmlRootElement
 public class Credential implements Serializable {
 
     private static final long serialVersionUID = 1L;
