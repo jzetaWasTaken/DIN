@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestionbancariaserver.res;
+package gestionbancariaserver.rest;
 
-import gestionbancariaserver.entity.Account;
+import gestionbancariaserver.entity.Transaction;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -25,27 +25,27 @@ import javax.ws.rs.core.MediaType;
  * @author ubuntu
  */
 @Stateless
-@Path("gestionbancariaserver.entity.account")
-public class AccountFacadeREST extends AbstractFacade<Account> {
+@Path("gestionbancariaserver.entity.transaction")
+public class TransactionFacadeREST extends AbstractFacade<Transaction> {
 
     @PersistenceContext(unitName = "GestionBancariaServerSidePU")
     private EntityManager em;
 
-    public AccountFacadeREST() {
-        super(Account.class);
+    public TransactionFacadeREST() {
+        super(Transaction.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Account entity) {
+    public void create(Transaction entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Account entity) {
+    public void edit(@PathParam("id") Integer id, Transaction entity) {
         super.edit(entity);
     }
 
@@ -58,21 +58,21 @@ public class AccountFacadeREST extends AbstractFacade<Account> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Account find(@PathParam("id") Integer id) {
+    public Transaction find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Account> findAll() {
+    public List<Transaction> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Account> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Transaction> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestionbancariaserver.res;
+package gestionbancariaserver.rest;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
@@ -29,10 +29,10 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(gestionbancariaserver.res.AccountFacadeREST.class);
-        resources.add(gestionbancariaserver.res.CredentialFacadeREST.class);
-        resources.add(gestionbancariaserver.res.CustomerFacadeREST.class);
-        resources.add(gestionbancariaserver.res.TransactionFacadeREST.class);
+        resources.add(gestionbancariaserver.rest.AccountFacadeREST.class);
+        resources.add(gestionbancariaserver.rest.CredentialFacadeREST.class);
+        resources.add(gestionbancariaserver.rest.CustomerFacadeREST.class);
+        resources.add(gestionbancariaserver.rest.TransactionFacadeREST.class);
     }
     
 }
