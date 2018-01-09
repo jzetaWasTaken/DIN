@@ -24,5 +24,6 @@ public interface BankingEJBLocal {
         public List<Transaction> findPaymentsByAccount(Long id) throws ReadException;
         public List<Transaction> findTransfersByAccount(Long id) throws ReadException;
         // TODO think about how to do login (see Credential and Customer entity)
+        
     
 }
