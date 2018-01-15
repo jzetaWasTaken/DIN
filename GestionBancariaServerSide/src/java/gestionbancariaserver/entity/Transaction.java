@@ -130,9 +130,15 @@ public class Transaction implements Serializable {
     public void setType(TransactionType type) {
         this.type = type;
     }
-    
-    
 
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

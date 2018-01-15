@@ -9,7 +9,12 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Transaction;
 import gestionbancariaserver.exceptions.ReadException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.ws.rs.PathParam;
 
 /**
  *
@@ -17,15 +22,50 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class BankingEJB implements BankingEJBLocal {
+    
+    private static final Logger LOGGER = Logger.getLogger("bankingappserverside");
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public List<Account> findAccountsByCustomerId(Long id) throws ReadException {
-        return null;
+        List<Account> accounts = null;
+        try {
+            LOGGER.info("BankingEJB: Fetching accounts by customer");
+            accounts = em.createNamedQuery("findAccountsByCustomerId")
+                    .setParameter("id", id)
+                    .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "BankingEJB: Exception fetching accounts by customer",
+                    e.getMessage());
+            throw new ReadException(e.getMessage());
+        }
+        if (accounts != null) {
+            LOGGER.log(Level.INFO,
+                    "BankingEJB: {0} accounts found",
+                    accounts.size());
+        } else {
+            LOGGER.info("BankingEJB: No accounts found");
+        }
+        return accounts;
     }
 
     @Override
-    public List<Transaction> findTransactionsByAccount(Long id) throws ReadException {
-        return null;
+    public List<Transaction> findTransactionsByAccount(Account account) throws ReadException {
+        List<Transaction> transactions = null;
+        try {
+            LOGGER.info("BankingEJB: Fetching transactions by account");
+            transactions = em.createNamedQuery("findTransactionsByAccount")
+                    .setParameter("account", account)
+                    .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "BankingEJB: Exception fetching transactions by account",
+                    e.getMessage());
+            throw new ReadException(e.getMessage());
+        }
+        return transactions;
     }
 
     @Override

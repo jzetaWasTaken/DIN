@@ -19,7 +19,7 @@ import javax.ejb.Local;
 public interface BankingEJBLocal {
         
     public List<Account> findAccountsByCustomerId(Long id) throws ReadException;
-    public List<Transaction> findTransactionsByAccount(Long id) throws ReadException;
+    public List<Transaction> findTransactionsByAccount(Account account) throws ReadException;
     public List<Transaction> findDepositsByAccount(Long id) throws ReadException;
     public List<Transaction> findPaymentsByAccount(Long id) throws ReadException;
     public List<Transaction> findTransfersByAccount(Long id) throws ReadException;
