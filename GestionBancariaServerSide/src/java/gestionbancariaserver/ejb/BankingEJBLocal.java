@@ -18,12 +18,10 @@ import javax.ejb.Local;
 @Local
 public interface BankingEJBLocal {
         
-        public List<Account> findAccountsByCustomerId(Long id) throws ReadException;
-        public List<Transaction> findTransactionsByAccount(Long id) throws ReadException;
-        public List<Transaction> findDepositsByAccount(Long id) throws ReadException;
-        public List<Transaction> findPaymentsByAccount(Long id) throws ReadException;
-        public List<Transaction> findTransfersByAccount(Long id) throws ReadException;
-        // TODO think about how to do login (see Credential and Customer entity)
-        
-    
+    public List<Account> findAccountsByCustomerId(Long id) throws ReadException;
+    public List<Transaction> findTransactionsByAccount(Long id) throws ReadException;
+    public List<Transaction> findDepositsByAccount(Long id) throws ReadException;
+    public List<Transaction> findPaymentsByAccount(Long id) throws ReadException;
+    public List<Transaction> findTransfersByAccount(Long id) throws ReadException;
+    // TODO think about how to do login (see Credential and Customer entity)
 }

@@ -5,6 +5,10 @@
  */
 package gestionbancariaserver.ejb;
 
+import gestionbancariaserver.entity.Account;
+import gestionbancariaserver.entity.Transaction;
+import gestionbancariaserver.exceptions.ReadException;
+import java.util.List;
 import javax.ejb.Stateless;
 
 /**
@@ -14,6 +18,28 @@ import javax.ejb.Stateless;
 @Stateless
 public class BankingEJB implements BankingEJBLocal {
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    @Override
+    public List<Account> findAccountsByCustomerId(Long id) throws ReadException {
+        return null;
+    }
+
+    @Override
+    public List<Transaction> findTransactionsByAccount(Long id) throws ReadException {
+        return null;
+    }
+
+    @Override
+    public List<Transaction> findDepositsByAccount(Long id) throws ReadException {
+        return null;
+    }
+
+    @Override
+    public List<Transaction> findPaymentsByAccount(Long id) throws ReadException {
+        return null;
+    }
+
+    @Override
+    public List<Transaction> findTransfersByAccount(Long id) throws ReadException {
+        return null;
+    }
 }
