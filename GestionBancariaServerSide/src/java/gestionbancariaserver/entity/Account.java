@@ -66,7 +66,9 @@ public class Account implements Serializable {
     @ManyToMany(mappedBy = "accounts")
     private Collection<Customer> customers;
     
-    @OneToMany(mappedBy = "account", fetch = javax.persistence.FetchType.LAZY)
+    @OneToMany(mappedBy = "account",
+            fetch = javax.persistence.FetchType.LAZY,
+            cascade = javax.persistence.CascadeType.ALL)
     private Collection<Transaction> transactions;
     
     public Integer getAccountId() {
