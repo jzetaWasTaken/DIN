@@ -29,7 +29,7 @@ public interface BankingEJBLocal {
     public List<Transaction> findPaymentsByAccount(Account account) throws ReadException;
     public List<Transaction> findTransfersByAccount(Account account) throws ReadException;
     public void createCustomer(Customer customer, Credential credential) throws CreateException;
-    public void createAccount(Account account) throws CreateException;
+    public void createAccount(Account account, List<Customer> customers) throws CreateException;
     public void createTransaction(Transaction transaction) throws CreateException;
     public void deleteCustomer(Customer customer) throws DeleteException;
     public void deleteAccount(Account account) throws DeleteException;

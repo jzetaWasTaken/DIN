@@ -26,11 +26,6 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -76,7 +71,12 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     public List<Transaction> findTransactionsByAccount(Account account) throws ReadException {
-        List<Transaction> transactions = null;
+        LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
+        List<Transaction> transactions = em
+            .createNamedQuery("findTransactionsByAccount")
+            .setParameter("account", account)
+            .getResultList();
+        /*
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
             transactions = em.createNamedQuery("findTransactionsByAccount")
@@ -95,7 +95,11 @@ public class BankingEJB implements BankingEJBLocal {
         } else {
             LOGGER.info(LOG_HEADER + ": No transactions found");
         }
-        return transactions;
+        */
+        LOGGER.log(Level.INFO,
+            LOG_HEADER + ": {0} transactions found",
+            transactions.size());
+        return transactions.isEmpty() ? null : transactions;
     }
 
     @Override
@@ -189,7 +193,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public void createAccount(Account account) throws CreateException {
+    public void createAccount(Account account, List<Customer> customers) throws CreateException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
