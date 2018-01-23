@@ -10,13 +10,13 @@ import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapsId;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -29,59 +29,67 @@ import javax.validation.constraints.Pattern;
  * @author ubuntu
  */
 @Entity
-@Table(name="CUSTOMER", schema="BANK_MANAGEMENT_DB")
+@Table(name = "CUSTOMER", schema = "BANK_MANAGEMENT_DB")
+@NamedQueries({
+    @NamedQuery(
+            name = "findCustomerById",
+            query = "SELECT c FROM Customer AS c WHERE c.id = :id")
+})
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     private Long id;
-            
+
     @NotNull
-    @Column(name="LAST_NAME")
+    @Column(name = "LAST_NAME")
     private String lastName;
-    
+
     @NotNull
-    @Column(name="FIRST_NAME")
+    @Column(name = "FIRST_NAME")
     private String firstName;
-            
+
     private String street;
-    
+
     private String city;
-    
+
     private String nation;
-    
+
     //TODO pattern zip
-    @Pattern(regexp = "",
+    @Pattern(regexp = "[0-9]{5}",
             message = "Invalid zip format")
     private String zip;
-    
+
     //TODO pattern phone
-    @Pattern(regexp = "",
+    @Pattern(regexp = "[0-9]{9}",
             message = "Invalid phone format")
     private String phone;
-    
+
     //TODO pattern email
-    @Pattern(regexp = "",
+    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`"
+            + "{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z"
+            + "0-9-]*[a-z0-9])?",
             message = "Invalid email format")
     private String email;
-    
+
     @Temporal(javax.persistence.TemporalType.DATE)
     @Past
-    @Column(name="BIRTH_DATE")
-    private Date birthDate;;
+    @Column(name = "BIRTH_DATE")
+    private Date birthDate;
+    ;
     
-    @OneToOne(cascade=javax.persistence.CascadeType.ALL,
-            fetch=javax.persistence.FetchType.LAZY)
+    @OneToOne(cascade = javax.persistence.CascadeType.ALL,
+            fetch = javax.persistence.FetchType.LAZY)
     @MapsId
     private Credential credentials;
-    
-    @ManyToMany(fetch=javax.persistence.FetchType.LAZY)
-    @JoinTable(name="CUSTOMER_ACCOUNTS",
-            joinColumns=
-                    @JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
-            inverseJoinColumns=
-                    @JoinColumn(name="ACCOUNT_ID", referencedColumnName="ACCOUNT_ID")
-            )
+
+    @ManyToMany(fetch = javax.persistence.FetchType.LAZY)
+    @JoinTable(name = "CUSTOMER_ACCOUNTS",
+            joinColumns
+            = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID"),
+            inverseJoinColumns
+            = @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ACCOUNT_ID")
+    )
     private Collection<Account> accounts;
 
     public Long getId() {
@@ -171,7 +179,7 @@ public class Customer implements Serializable {
     public void setCredentials(Credential credentials) {
         this.credentials = credentials;
     }
-    
+
     public Collection<Account> getAccounts() {
         return accounts;
     }
@@ -204,5 +212,5 @@ public class Customer implements Serializable {
     public String toString() {
         return "gestionbancariaserver.entity.Customer[ id=" + id + " ]";
     }
-    
+
 }

@@ -9,11 +9,8 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Customer;
 import gestionbancariaserver.entity.Transaction;
-import gestionbancariaserver.exceptions.ReadException;
-import gestionbancariaserver.exceptions.DeleteException;
-import gestionbancariaserver.exceptions.UpdateException;
 import java.util.List;
-import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.Local;
 
 /**
@@ -23,16 +20,18 @@ import javax.ejb.Local;
 @Local
 public interface BankingEJBLocal {
         
-    public List<Account> findAccountsByCustomerId(Long id) throws ReadException;
-    public List<Transaction> findTransactionsByAccount(Account account) throws ReadException;
-    public List<Transaction> findDepositsByAccount(Account account) throws ReadException;
-    public List<Transaction> findPaymentsByAccount(Account account) throws ReadException;
-    public List<Transaction> findTransfersByAccount(Account account) throws ReadException;
-    public void createCustomer(Customer customer, Credential credential) throws CreateException;
-    public void createAccount(Account account, List<Customer> customers) throws CreateException;
-    public void createTransaction(Transaction transaction) throws CreateException;
-    public void deleteCustomer(Customer customer) throws DeleteException;
-    public void deleteAccount(Account account) throws DeleteException;
-    public void updateAccount(Account account) throws UpdateException;
-    public void updateCredential(Credential credential) throws UpdateException;
+    public List<Account> findAccountsByCustomerId(Long id) throws EJBException;
+    public List<Transaction> findTransactionsByAccount(Account account) throws EJBException;
+    public List<Transaction> findDepositsByAccount(Account account) throws EJBException;
+    public List<Transaction> findPaymentsByAccount(Account account) throws EJBException;
+    public List<Transaction> findTransfersByAccount(Account account) throws EJBException;
+    public Long findCustomerIdByLogin(String login, String passw) throws EJBException;
+    public Customer findCustomerById(Long id) throws EJBException;
+    public void createCustomer(Customer customer, Credential credential) throws EJBException;
+    public void createAccount(Account account, List<Customer> customers) throws EJBException;
+    public void createTransaction(Transaction transaction) throws EJBException;
+    public void deleteCustomer(Customer customer) throws EJBException;
+    public void deleteAccount(Account account) throws EJBException;
+    public void updateAccount(Account account) throws EJBException;
+    public void updateCredential(Credential credential) throws EJBException;
 }
