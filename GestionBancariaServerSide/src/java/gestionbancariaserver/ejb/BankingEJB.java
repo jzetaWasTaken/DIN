@@ -175,7 +175,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public void createCustomer(Customer customer, Credential credential) throws CreateException {
+    public void createCustomer(Customer customer, Credential credential) {
         LOGGER.info(LOG_HEADER + ": Creating customer");
         try {
             credential.setCreatedOn(new Date());
@@ -187,7 +187,7 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception in customer creation",
                     e.getMessage());
-            throw new CreateException(e.getMessage());
+            
         }
         LOGGER.info(LOG_HEADER + ": Customer created");
     }
