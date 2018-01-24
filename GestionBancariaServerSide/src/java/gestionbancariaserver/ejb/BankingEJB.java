@@ -10,9 +10,6 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Customer;
 import gestionbancariaserver.entity.Transaction;
-import gestionbancariaserver.exceptions.DeleteException;
-import gestionbancariaserver.exceptions.ReadException;
-import gestionbancariaserver.exceptions.UpdateException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -21,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -33,20 +31,20 @@ import javax.transaction.UserTransaction;
  * @author ubuntu
  */
 @Stateless
-@TransactionManagement(value=TransactionManagementType.BEAN)
+@TransactionManagement(value = TransactionManagementType.BEAN)
 public class BankingEJB implements BankingEJBLocal {
-    
+
     public static final String LOG_HEADER = "BankingEJB";
     private static final Logger LOGGER = Logger.getLogger("bankingappserverside");
-    
+
     @Resource
     private UserTransaction userTransaction;
-    
+
     @PersistenceContext
     private EntityManager em;
 
     @Override
-    public List<Account> findAccountsByCustomerId(Long id) throws ReadException {
+    public List<Account> findAccountsByCustomerId(Long id) throws EJBException {
         List<Account> accounts = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching accounts by customer");
@@ -57,26 +55,17 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching accounts by customer",
                     e.getMessage());
-            throw new ReadException(e.getMessage());
+            throw new EJBException(e.getMessage());
         }
-        if (accounts != null) {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": {0} accounts found",
-                    accounts.size());
-        } else {
-            LOGGER.info(LOG_HEADER + ": No accounts found");
-        }
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} accounts found",
+                accounts.size());
         return accounts;
     }
 
     @Override
-    public List<Transaction> findTransactionsByAccount(Account account) throws ReadException {
-        LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
-        List<Transaction> transactions = em
-            .createNamedQuery("findTransactionsByAccount")
-            .setParameter("account", account)
-            .getResultList();
-        /*
+    public List<Transaction> findTransactionsByAccount(Account account) throws EJBException {
+        List<Transaction> transactions = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
             transactions = em.createNamedQuery("findTransactionsByAccount")
@@ -86,24 +75,16 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching transactions by account",
                     e.getMessage());
-            throw new ReadException(e.getMessage());
+            throw new EJBException(e.getMessage());
         }
-        if (transactions != null) {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": {0} transactions found",
-                    transactions.size());
-        } else {
-            LOGGER.info(LOG_HEADER + ": No transactions found");
-        }
-        */
         LOGGER.log(Level.INFO,
-            LOG_HEADER + ": {0} transactions found",
-            transactions.size());
-        return transactions.isEmpty() ? null : transactions;
+                LOG_HEADER + ": {0} transactions found",
+                transactions.size());
+        return transactions;
     }
 
     @Override
-    public List<Transaction> findDepositsByAccount(Account account) throws ReadException {
+    public List<Transaction> findDepositsByAccount(Account account) throws EJBException {
         List<Transaction> deposits = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching deposits by account");
@@ -114,20 +95,16 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching deposits by account",
                     e.getMessage());
-            throw new ReadException(e.getMessage());
+            throw new EJBException(e.getMessage());
         }
-        if (deposits != null) {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": {0} deposits found",
-                    deposits.size());
-        } else {
-            LOGGER.info(LOG_HEADER + ": No deposits found");
-        }
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} deposits found",
+                deposits.size());
         return deposits;
     }
 
     @Override
-    public List<Transaction> findPaymentsByAccount(Account account) throws ReadException {
+    public List<Transaction> findPaymentsByAccount(Account account) throws EJBException {
         List<Transaction> payments = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching payments by account");
@@ -138,20 +115,16 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching payments by account",
                     e.getMessage());
-            throw new ReadException(e.getMessage());
+            throw new EJBException(e.getMessage());
         }
-        if (payments != null) {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": {0} payments found",
-                    payments.size());
-        } else {
-            LOGGER.info(LOG_HEADER + ": No payments found");
-        }
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} payments found",
+                payments.size());
         return payments;
     }
 
     @Override
-    public List<Transaction> findTransfersByAccount(Account account) throws ReadException {
+    public List<Transaction> findTransfersByAccount(Account account) throws EJBException {
         List<Transaction> transfers = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transfers by account");
@@ -162,74 +135,86 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching transfers by account",
                     e.getMessage());
-            throw new ReadException(e.getMessage());
+            throw new EJBException(e.getMessage());
         }
-        if (transfers != null) {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": {0} transfers found",
-                    transfers.size());
-        } else {
-            LOGGER.info(LOG_HEADER + ": No transfers found");
-        }
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} transfers found",
+                transfers.size());
         return transfers;
     }
 
     @Override
-    public void createCustomer(Customer customer, Credential credential) {
+    public Long findCustomerIdByLogin(String login, String passw) throws EJBException {
+        Long id = null;
+        List<Object[]> list = null;
+        try {
+            LOGGER.info(LOG_HEADER + ": Fetching customer ID by login");
+            list = em.createNamedQuery("findCustomerIdByLogin")
+                    .setParameter("login", login)
+                    .setParameter("passw",passw)
+                    .getResultList();
+            if (list.size() == 1) {
+                id = (Long) list.get(0)[0];
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    LOG_HEADER + ": Exception fetching customer ID by login",
+                    e.getMessage());
+            throw new EJBException(e.getMessage());
+        }
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} IDs found",
+                list.size());
+        return id;
+    }
+
+    
+    // TODO
+    @Override
+    public Customer findCustomerById(Long id) throws EJBException {
+        Customer customer = null;
+        
+        return customer;
+    }
+    
+    @Override
+    public void createCustomer(Customer customer) throws EJBException {
         LOGGER.info(LOG_HEADER + ": Creating customer");
         try {
-            credential.setCreatedOn(new Date());
-            credential.setPassw(encryptPassw(credential));
+            customer.getCredentials().setCreatedOn(new Date());
             LOGGER.info(LOG_HEADER + ": Setting user credentials");
-            customer.setCredentials(credential);
             em.persist(customer);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception in customer creation",
                     e.getMessage());
-            
+            throw new EJBException(e.getMessage());
         }
         LOGGER.info(LOG_HEADER + ": Customer created");
     }
 
     @Override
-    public void createAccount(Account account, List<Customer> customers) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createAccount(Account account) throws EJBException {
     }
 
     @Override
-    public void createTransaction(Transaction transaction) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createTransaction(Transaction transaction) throws EJBException {
     }
 
     @Override
-    public void deleteCustomer(Customer customer) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deleteCustomer(Customer customer) throws EJBException {
     }
 
     @Override
-    public void deleteAccount(Account account) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deleteAccount(Account account) throws EJBException {
     }
 
     @Override
-    public void updateAccount(Account account) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    @Override
-    public void updateCredential(Credential credential) throws UpdateException {
-        
+    public void updateAccount(Account account) throws EJBException {
     }
 
-    private String encryptPassw(Credential credential) throws NoSuchAlgorithmException {
-        byte [] passwBytes = credential.getPassw().getBytes();
-        MessageDigest md = MessageDigest.getInstance(MessageConstants.SHA_512);
-        md.update(passwBytes);
-        StringBuilder sb = new StringBuilder();
-        for (byte passwByte : passwBytes) {
-            sb.append(String.format("%02x", passwByte & 0xff));
-        }
-        return sb.toString();
+    @Override
+    public void updateCredential(Credential credential) throws EJBException {
+
     }
 }
