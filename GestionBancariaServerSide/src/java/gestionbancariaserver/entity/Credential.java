@@ -36,10 +36,7 @@ public class Credential implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    //TODO login regexp
     @NotNull
-    @Pattern(regexp="",
-            message="Invalid login format")
     private String login;
     
     @NotNull

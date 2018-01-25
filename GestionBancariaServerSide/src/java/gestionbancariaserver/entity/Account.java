@@ -68,7 +68,7 @@ public class Account implements Serializable {
     
     @OneToMany(mappedBy = "account",
             fetch = javax.persistence.FetchType.LAZY,
-            cascade = javax.persistence.CascadeType.ALL)
+            cascade = javax.persistence.CascadeType.REMOVE)
     private Collection<Transaction> transactions;
     
     public Integer getAccountId() {
