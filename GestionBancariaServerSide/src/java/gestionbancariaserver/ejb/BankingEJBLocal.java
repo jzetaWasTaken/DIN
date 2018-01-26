@@ -25,8 +25,7 @@ public interface BankingEJBLocal {
     public List<Transaction> findDepositsByAccount(Account account) throws EJBException;
     public List<Transaction> findPaymentsByAccount(Account account) throws EJBException;
     public List<Transaction> findTransfersByAccount(Account account) throws EJBException;
-    public Long findCustomerIdByLogin(String login, String passw) throws EJBException;
-    public Customer findCustomerById(Long id) throws EJBException;
+    public Customer findCustomerByLogin(String login, String passw) throws EJBException;
     public void createCustomer(Customer customer) throws EJBException;
     public void createAccount(Account account) throws EJBException;
     public void makeDeposit(Transaction transaction) throws EJBException;

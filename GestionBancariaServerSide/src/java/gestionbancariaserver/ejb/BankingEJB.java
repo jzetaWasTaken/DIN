@@ -140,9 +140,7 @@ public class BankingEJB implements BankingEJBLocal {
         return transfers;
     }
 
-    @Override
-    public Long findCustomerIdByLogin(String login, String passw) throws EJBException {
-        Long id = null;
+    private Long findCustomerIdByLogin(String login, String passw) throws EJBException {
         List<Object[]> list = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching customer ID by login");
@@ -150,9 +148,6 @@ public class BankingEJB implements BankingEJBLocal {
                     .setParameter("login", login)
                     .setParameter("passw",passw)
                     .getResultList();
-            if (list.size() == 1) {
-                id = (Long) list.get(0)[0];
-            }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching customer ID by login. {0}",
@@ -162,12 +157,13 @@ public class BankingEJB implements BankingEJBLocal {
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} IDs found",
                 list.size());
-        return id;
+        return (Long) list.get(0)[0];
     }
 
     @Override
-    public Customer findCustomerById(Long id) throws EJBException {
+    public Customer findCustomerByLogin(String login, String passw) throws EJBException {
         Customer customer = null;
+        Long id = findCustomerIdByLogin(login, passw);
         try {
             LOGGER.info(LOG_HEADER + ": Fetching customer by ID");
             customer = (Customer) em.createNamedQuery("findCustomerById")
@@ -184,28 +180,40 @@ public class BankingEJB implements BankingEJBLocal {
     }
     
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void createCustomer(Customer customer) throws EJBException {
         try {
             LOGGER.info(LOG_HEADER + ": Creating customer");
+            userTransaction.begin();
             customer.getCredentials().setCreatedOn(new Date());
             LOGGER.info(LOG_HEADER + ": Setting user credentials");
             em.persist(customer);
+            userTransaction.commit();
+            LOGGER.info(LOG_HEADER + ": Customer created");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception in customer creation. {0}",
                     e.getMessage());
             throw new EJBException(e.getMessage());
         }
-        LOGGER.info(LOG_HEADER + ": Customer created");
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void createAccount(Account account) throws EJBException {
         try {
             LOGGER.info(LOG_HEADER + ": Creating account");
+            userTransaction.begin();
             em.persist(account);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Account created");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception in account creation. {0}",
                     e.getMessage());
@@ -216,8 +224,8 @@ public class BankingEJB implements BankingEJBLocal {
     @Override
     @SuppressWarnings("UseSpecificCatch")
     public void makeDeposit(Transaction transaction) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Making money deposit");
         try {
+            LOGGER.info(LOG_HEADER + ": Making money deposit");
             userTransaction.begin();
             Account account = transaction.getAccount();
             BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
@@ -227,7 +235,11 @@ public class BankingEJB implements BankingEJBLocal {
             em.merge(account);
             em.persist(transaction);
             userTransaction.commit();
+            LOGGER.info(LOG_HEADER + ": Deposit made");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception making deposit. {0}",
                     e.getMessage());
@@ -236,20 +248,55 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void makePayment(Transaction transaction) throws EJBException {
+        try {
+            LOGGER.info(LOG_HEADER + ": Making money payment");
+            userTransaction.begin();
+            //TODO check account type and credit line
+            if (transaction.getAccount().getBalance().subtract(transaction.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
+                try {
+                    userTransaction.rollback();
+                } catch (Exception e) {}
+                throw new EJBException();
+            }
+            Account account = transaction.getAccount();
+            BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+            account.setBalance(newBalance);
+            transaction.setBalance(newBalance);
+            em.merge(account);
+            em.persist(transaction);
+            userTransaction.commit();
+            LOGGER.info(LOG_HEADER + ": Payment made");
+        } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
+            LOGGER.log(Level.SEVERE,
+                    LOG_HEADER + ": Exception making payment. {0}",
+                    e.getMessage());
+            throw new EJBException(e.getMessage());
+        }
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void makeTransfer(Transaction transaction) throws EJBException {
     }
     
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void deleteCustomer(Customer customer) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Deleting customer");
         try {
+            LOGGER.info(LOG_HEADER + ": Deleting customer");
+            userTransaction.begin();
             em.remove(customer);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + "Customer deleted");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception deleting customer. {0}",
                     e.getMessage());
@@ -258,12 +305,18 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void deleteAccount(Account account) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Deleting account");
         try {
+            LOGGER.info(LOG_HEADER + ": Deleting account");
+            userTransaction.begin();
             em.remove(account);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Account deleted");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception deleting account. {0}",
                     e.getMessage());
@@ -272,11 +325,19 @@ public class BankingEJB implements BankingEJBLocal {
     }
     
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void updateCustomer(Customer customer) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Updating customer");
         try {
+            LOGGER.info(LOG_HEADER + ": Updating customer");
+            userTransaction.begin();
             em.merge(customer);
+            userTransaction.commit();
+            LOGGER.info(LOG_HEADER + ": Customer updated");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {
+            }
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + "Exception updating customer. {0}",
                     e.getMessage());
@@ -285,12 +346,18 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void updateAccount(Account account) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Updating account");
         try {
+            LOGGER.info(LOG_HEADER + ": Updating account");
+            userTransaction.begin();
             em.merge(account);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Account updated");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception updating account. {0}",
                     e.getMessage());
@@ -299,13 +366,19 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void updateCredential(Credential credential) throws EJBException {
-        LOGGER.info(LOG_HEADER + ": Updating credentials");
         try {
+            LOGGER.info(LOG_HEADER + ": Updating credentials");
+            userTransaction.begin();
             credential.setLastModifiedOn(new Date());
             em.merge(credential);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Credentials updated");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception updating credentials. {0}",
                     e.getMessage());
@@ -314,13 +387,20 @@ public class BankingEJB implements BankingEJBLocal {
     }
     
     @Override
+    @SuppressWarnings("UseSpecificCatch")
     public void updateSignedIn(Credential credential) {
-        LOGGER.info(LOG_HEADER + ": Updating customer last sign in date");
         try {
+            LOGGER.info(LOG_HEADER + ": Updating customer last sign in date");
+            userTransaction.begin();
             credential.setLastSignedIn(new Date());
             em.merge(credential);
+            userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Last signed in date updated");
         } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {
+            }
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception updating las signed in date. {0}",
                     e.getMessage());

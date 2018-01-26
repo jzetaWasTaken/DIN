@@ -33,7 +33,11 @@ import javax.validation.constraints.Pattern;
 @NamedQueries({
     @NamedQuery(
             name = "findCustomerById",
-            query = "SELECT c FROM Customer AS c WHERE c.id = :id")
+            query = "SELECT c FROM Customer AS c WHERE c.id = :id"),
+    @NamedQuery(
+            name = "findCustomerByLogin",
+            query = "SELECT c FROM Customer AS c JOIN c.credentials AS cr WHERE "
+                    + "cr.login = :login and cr.passw = :passw")
 })
 public class Customer implements Serializable {
 
