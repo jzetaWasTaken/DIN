@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.LockModeType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -26,7 +27,8 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(
         name="findCustomerIdByLogin",
-        query="SELECT c.id FROM Credential AS c WHERE c.login = :login AND c.passw = :passw")
+        query="SELECT c.id FROM Credential AS c WHERE c.login = :login AND c.passw = :passw",
+        lockMode = LockModeType.NONE)
 })
 public class Credential implements Serializable {
 

@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.LockModeType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,25 +34,29 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(
         name="findTransactionsByAccount",
-        query="SELECT t FROM Transaction AS t WHERE t.account = :account"),
+        query="SELECT t FROM Transaction AS t WHERE t.account = :account",
+        lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findDepositsByAccount",
         query="SELECT t "+ 
               "FROM Transaction AS t "+
               "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.DEPOSIT "+
-              "AND t.account = :account"),
+              "AND t.account = :account",
+        lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findTransfersByAccount",
         query="SELECT t "+ 
               "FROM Transaction AS t "+
               "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.TRANSFER "+
-              "AND t.account = :account"),
+              "AND t.account = :account",
+        lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findPaymentsByAccount",
         query="SELECT t "+ 
               "FROM Transaction AS t "+
               "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "+
-              "AND t.account = :account"),
+              "AND t.account = :account",
+        lockMode = LockModeType.NONE),
 })
 public class Transaction implements Serializable {
 
@@ -83,6 +88,18 @@ public class Transaction implements Serializable {
     @JoinColumn(name="ACCOUNT_ID", nullable=false)
     private Account account;
 
+    public Transaction() {
+    }
+
+    public Transaction(Date timeStamp, BigDecimal amount, BigDecimal balance, String description, TransactionType type, Account account) {
+        this.timeStamp = timeStamp;
+        this.amount = amount;
+        this.balance = balance;
+        this.description = description;
+        this.type = type;
+        this.account = account;
+    }
+    
     public Integer getTransactionId() {
         return transactionId;
     }

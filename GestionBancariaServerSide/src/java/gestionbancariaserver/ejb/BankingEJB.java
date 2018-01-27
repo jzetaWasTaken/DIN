@@ -20,6 +20,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
@@ -140,33 +141,13 @@ public class BankingEJB implements BankingEJBLocal {
         return transfers;
     }
 
-    private Long findCustomerIdByLogin(String login, String passw) throws EJBException {
-        List<Object[]> list = null;
-        try {
-            LOGGER.info(LOG_HEADER + ": Fetching customer ID by login");
-            list = em.createNamedQuery("findCustomerIdByLogin")
-                    .setParameter("login", login)
-                    .setParameter("passw",passw)
-                    .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception fetching customer ID by login. {0}",
-                    e.getMessage());
-            throw new EJBException(e.getMessage());
-        }
-        LOGGER.log(Level.INFO,
-                LOG_HEADER + ": {0} IDs found",
-                list.size());
-        return (Long) list.get(0)[0];
-    }
-
     @Override
     public Customer findCustomerByLogin(String login, String passw) throws EJBException {
         Customer customer = null;
-        Long id = findCustomerIdByLogin(login, passw);
         try {
-            LOGGER.info(LOG_HEADER + ": Fetching customer by ID");
-            customer = (Customer) em.createNamedQuery("findCustomerById")
+            LOGGER.info(LOG_HEADER + ": Fetching customer by login");
+            Long id = findCustomerIdByLogin(login, passw);
+            customer = em.createNamedQuery("findCustomerById", Customer.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (Exception e) {
@@ -207,6 +188,7 @@ public class BankingEJB implements BankingEJBLocal {
         try {
             LOGGER.info(LOG_HEADER + ": Creating account");
             userTransaction.begin();
+            account.setBeginBalanceDate(new Date());
             em.persist(account);
             userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Account created");
@@ -233,6 +215,7 @@ public class BankingEJB implements BankingEJBLocal {
             transaction.setBalance(newBalance);
             transaction.setTimeStamp(new Date());
             em.merge(account);
+            em.refresh(transaction);
             em.persist(transaction);
             userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Deposit made");
@@ -253,18 +236,15 @@ public class BankingEJB implements BankingEJBLocal {
         try {
             LOGGER.info(LOG_HEADER + ": Making money payment");
             userTransaction.begin();
-            //TODO check account type and credit line
-            if (transaction.getAccount().getBalance().subtract(transaction.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
-                try {
-                    userTransaction.rollback();
-                } catch (Exception e) {}
-                throw new EJBException();
-            }
             Account account = transaction.getAccount();
             BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
             account.setBalance(newBalance);
-            transaction.setBalance(newBalance);
+            checkBalance(account);
             em.merge(account);
+            em.refresh(transaction);
+            transaction.setBalance(newBalance);
+            transaction.setTimeStamp(new Date());
+            transaction.setType(Transaction.TransactionType.PAYMENT);
             em.persist(transaction);
             userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Payment made");
@@ -281,7 +261,41 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     @SuppressWarnings("UseSpecificCatch")
-    public void makeTransfer(Transaction transaction) throws EJBException {
+    public void makeTransfer(Transaction transaction, String accountToId) throws EJBException {
+        try {
+            LOGGER.info(LOG_HEADER + ": Making money transfer");
+            userTransaction.begin();
+            Account accountTo =  findAccountTo(accountToId);
+            Account accountFrom = transaction.getAccount();
+            BigDecimal newBalance = accountFrom.getBalance().subtract(transaction.getAmount());
+            accountFrom.setBalance(newBalance);
+            checkBalance(accountFrom);
+            em.merge(accountFrom);
+            em.refresh(transaction);
+            transaction.setBalance(newBalance);
+            transaction.setTimeStamp(new Date());
+            transaction.setType(Transaction.TransactionType.TRANSFER);
+            em.persist(transaction);
+            newBalance = accountTo.getBalance().add(transaction.getAmount());
+            accountTo.setBalance(newBalance);
+            transaction = new Transaction(new Date(),
+                    transaction.getAmount(), 
+                    newBalance, 
+                    transaction.getDescription(), 
+                    Transaction.TransactionType.DEPOSIT, 
+                    accountTo);
+            em.persist(transaction);
+            userTransaction.commit();
+            LOGGER.info(LOG_HEADER + ": Transfer made");
+        } catch (Exception e) {
+            try {
+                userTransaction.rollback();
+            } catch (Exception ee) {}
+            LOGGER.log(Level.SEVERE,
+                    LOG_HEADER + ": Exception making transfer. {0}",
+                    e.getMessage());
+            throw new EJBException(e.getMessage());
+        }
     }
     
     @Override
@@ -406,5 +420,44 @@ public class BankingEJB implements BankingEJBLocal {
                     e.getMessage());
             throw new EJBException(e.getMessage());
         }
+    }
+    
+    private Long findCustomerIdByLogin(String login, String passw) throws Exception {
+        LOGGER.info(LOG_HEADER + ": Fetching customer ID by login");
+        List<Object[]> list = em.createNamedQuery("findCustomerIdByLogin")
+                .setParameter("login", login)
+                .setParameter("passw",passw)
+                .getResultList();
+        if (list == null || list.isEmpty())
+            throw new Exception();
+        LOGGER.log(Level.INFO,
+                LOG_HEADER + ": {0} IDs found",
+                list.size());
+        return (Long) list.get(0)[0];
+    }
+    
+    private void checkBalance(Account account) throws Exception {
+        LOGGER.info(LOG_HEADER + ": Checking account balance");
+        BigDecimal balance;
+        if (account.getType().equals(Account.AccountType.CREDIT)) {
+            balance = account.getBalance().add(account.getCreditLine());
+        } else {
+            balance = account.getBalance();
+        }
+        if (balance.compareTo(BigDecimal.ZERO) < 0) {
+            LOGGER.warning(LOG_HEADER + "Not enough funds");
+            throw new Exception();
+        }
+    }
+
+    private Account findAccountTo(String accountTo) throws Exception {
+        LOGGER.info(LOG_HEADER + ": Fetching account by ID");
+        List<Account> accounts = em.createNamedQuery("findAccountById",Account.class)
+            .setParameter("accountId", accountTo)
+            .getResultList();
+        if (accounts == null || accounts.isEmpty()) 
+            throw new Exception();
+        LOGGER.info(LOG_HEADER + ": Account found");
+        return accounts.get(0);
     }
 }

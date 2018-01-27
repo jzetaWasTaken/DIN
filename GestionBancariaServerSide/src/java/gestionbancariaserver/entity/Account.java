@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import static javax.persistence.EnumType.STRING;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.LockModeType;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,17 +33,22 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(
             name="findAccountsByCustomerId",
-            query="SELECT a FROM Account AS a, IN (a.customers) AS c WHERE c.id = :id")
+            query="SELECT a FROM Account AS a, IN (a.customers) AS c WHERE c.id = :id",
+            lockMode = LockModeType.NONE),
+    @NamedQuery(
+            name="findAccountById",
+            query="SELECT a FROM Account AS a WHERE a.accountId = :accountId",
+            lockMode = LockModeType.NONE)
 })
 public class Account implements Serializable {
 
-    public static enum AccountType {SAVINGS, CHECK, CREDIT, IPF}
+    public static enum AccountType {SAVINGS, CHECK, CREDIT}
     
     private static final long serialVersionUID = 1L;
     
     @Id
     @Column(name="ACCOUNT_ID")
-    private Integer accountId;
+    private String accountId;
     
     @Enumerated(STRING)
     private AccountType type;
@@ -71,11 +77,11 @@ public class Account implements Serializable {
             cascade = javax.persistence.CascadeType.REMOVE)
     private Collection<Transaction> transactions;
     
-    public Integer getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Integer accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 

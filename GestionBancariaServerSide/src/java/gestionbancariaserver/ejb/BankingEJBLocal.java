@@ -30,7 +30,7 @@ public interface BankingEJBLocal {
     public void createAccount(Account account) throws EJBException;
     public void makeDeposit(Transaction transaction) throws EJBException;
     public void makePayment(Transaction transaction) throws EJBException;
-    public void makeTransfer(Transaction transaction) throws EJBException;
+    public void makeTransfer(Transaction transaction, String accountToId) throws EJBException;
     public void deleteCustomer(Customer customer) throws EJBException;
     public void deleteAccount(Account account) throws EJBException;
     public void updateCustomer(Customer custmer) throws EJBException;
