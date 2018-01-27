@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -63,7 +62,7 @@ public class BankingREST {
         return accounts;
     }
     
-    
+    /*
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -116,5 +115,5 @@ public class BankingREST {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+    */
 }
