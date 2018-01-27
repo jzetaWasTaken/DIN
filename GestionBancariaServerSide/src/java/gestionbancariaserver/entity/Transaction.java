@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -58,6 +59,7 @@ import javax.validation.constraints.NotNull;
               "AND t.account = :account",
         lockMode = LockModeType.NONE),
 })
+@XmlRootElement(name="transaction")
 public class Transaction implements Serializable {
 
     public static enum TransactionType {DEPOSIT, TRANSFER, PAYMENT}
@@ -165,7 +167,6 @@ public class Transaction implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the transactionId fields are not set
         if (!(object instanceof Transaction)) {
             return false;
         }

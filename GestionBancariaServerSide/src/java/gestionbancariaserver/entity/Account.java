@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -40,6 +41,7 @@ import javax.validation.constraints.NotNull;
             query="SELECT a FROM Account AS a WHERE a.accountId = :accountId",
             lockMode = LockModeType.NONE)
 })
+@XmlRootElement(name="account")
 public class Account implements Serializable {
 
     public static enum AccountType {SAVINGS, CHECK, CREDIT}
@@ -160,7 +162,6 @@ public class Account implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the accountId fields are not set
         if (!(object instanceof Account)) {
             return false;
         }

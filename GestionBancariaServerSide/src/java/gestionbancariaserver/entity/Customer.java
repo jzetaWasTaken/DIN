@@ -24,6 +24,7 @@ import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -42,6 +43,7 @@ import javax.validation.constraints.Pattern;
                     + "cr.login = :login and cr.passw = :passw",
             lockMode = LockModeType.NONE)
 })
+@XmlRootElement(name="customer")
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -72,7 +74,6 @@ public class Customer implements Serializable {
             message = "Invalid phone format")
     private String phone;
 
-    //TODO pattern email
     @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`"
             + "{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z"
             + "0-9-]*[a-z0-9])?",
@@ -83,7 +84,6 @@ public class Customer implements Serializable {
     @Past
     @Column(name = "BIRTH_DATE")
     private Date birthDate;
-    ;
     
     @OneToOne(cascade = javax.persistence.CascadeType.ALL,
             fetch = javax.persistence.FetchType.LAZY)
@@ -204,7 +204,6 @@ public class Customer implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Customer)) {
             return false;
         }
