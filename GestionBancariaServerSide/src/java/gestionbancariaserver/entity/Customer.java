@@ -92,6 +92,7 @@ public class Customer implements Serializable {
 
     @ManyToMany(fetch = javax.persistence.FetchType.LAZY)
     @JoinTable(name = "CUSTOMER_ACCOUNTS",
+            schema = "BANK_MANAGEMENT_DB",
             joinColumns
             = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID"),
             inverseJoinColumns
