@@ -62,6 +62,27 @@ public class BankingREST {
         return accounts;
     }
     
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public List<Transaction> findTransactionsByAccount(Account account) {
+        List<Transaction> transactions = null;
+        try {
+            transactions = ejb.findTransactionsByAccount(account);
+            if (transactions == null || transactions.isEmpty()) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return transactions;
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public List<Transaction> findDepositsByAccount(Account account) {
+        
+    }
+    
     /*
     @POST
     @Override
