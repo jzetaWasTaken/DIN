@@ -77,13 +77,14 @@ public class BankingREST {
         return transactions;
     }
     
+    /*
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public List<Transaction> findDepositsByAccount(Account account) {
         
     }
     
-    /*
+    
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
