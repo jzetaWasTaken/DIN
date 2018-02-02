@@ -35,28 +35,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(
         name="findTransactionsByAccount",
-        query="SELECT t FROM Transaction AS t WHERE t.account = :account",
+        query="SELECT t FROM Transaction AS t WHERE EXISTS "
+                + "(SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findDepositsByAccount",
-        query="SELECT t "+ 
-              "FROM Transaction AS t "+
-              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.DEPOSIT "+
-              "AND t.account = :account",
+        query="SELECT t FROM Transaction AS t "
+                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.DEPOSIT "
+                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findTransfersByAccount",
-        query="SELECT t "+ 
-              "FROM Transaction AS t "+
-              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.TRANSFER "+
-              "AND t.account = :account",
+        query="SELECT t FROM Transaction AS t "
+                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.TRANSFER "
+                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findPaymentsByAccount",
-        query="SELECT t "+ 
-              "FROM Transaction AS t "+
-              "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "+
-              "AND t.account = :account",
+        query="SELECT t FROM Transaction AS t "
+                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "
+                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
 })
 @XmlRootElement(name="transaction")

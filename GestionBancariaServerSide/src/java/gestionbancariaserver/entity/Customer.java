@@ -87,7 +87,6 @@ public class Customer implements Serializable {
     
     @OneToOne(cascade = javax.persistence.CascadeType.ALL,
             fetch = javax.persistence.FetchType.LAZY)
-    @MapsId
     private Credential credentials;
 
     @ManyToMany(fetch = javax.persistence.FetchType.LAZY)

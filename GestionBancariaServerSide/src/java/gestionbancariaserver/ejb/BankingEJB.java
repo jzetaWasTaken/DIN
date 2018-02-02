@@ -61,12 +61,12 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findTransactionsByAccount(Account account) throws EJBException {
+    public List<Transaction> findTransactionsByAccount(String accountId) throws EJBException {
         List<Transaction> transactions = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
             transactions = em.createNamedQuery("findTransactionsByAccount")
-                    .setParameter("account", account)
+                    .setParameter("account", accountId)
                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
@@ -81,12 +81,12 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findDepositsByAccount(Account account) throws EJBException {
+    public List<Transaction> findDepositsByAccount(String accountId) throws EJBException {
         List<Transaction> deposits = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching deposits by account");
             deposits = em.createNamedQuery("findDepositsByAccount")
-                    .setParameter("account", account)
+                    .setParameter("account", accountId)
                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
@@ -101,12 +101,12 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findPaymentsByAccount(Account account) throws EJBException {
+    public List<Transaction> findPaymentsByAccount(String accountId) throws EJBException {
         List<Transaction> payments = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching payments by account");
             payments = em.createNamedQuery("findPaymentsByAccount")
-                    .setParameter("account", account)
+                    .setParameter("account", accountId)
                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
@@ -121,12 +121,12 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findTransfersByAccount(Account account) throws EJBException {
+    public List<Transaction> findTransfersByAccount(String accountId) throws EJBException {
         List<Transaction> transfers = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transfers by account");
             transfers = em.createNamedQuery("findTransfersByAccount")
-                    .setParameter("account", account)
+                    .setParameter("account", accountId)
                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
@@ -264,7 +264,7 @@ public class BankingEJB implements BankingEJBLocal {
         try {
             LOGGER.info(LOG_HEADER + ": Making money transfer");
             userTransaction.begin();
-            Account accountTo =  findAccountTo(accountToId);
+            Account accountTo =  findAccountById(accountToId);
             Account accountFrom = transaction.getAccount();
             BigDecimal newBalance = accountFrom.getBalance().subtract(transaction.getAmount());
             accountFrom.setBalance(newBalance);
@@ -299,11 +299,11 @@ public class BankingEJB implements BankingEJBLocal {
     
     @Override
     @SuppressWarnings("UseSpecificCatch")
-    public void deleteCustomer(Customer customer) throws EJBException {
+    public void deleteCustomer(Long customerId) throws EJBException {
         try {
             LOGGER.info(LOG_HEADER + ": Deleting customer");
             userTransaction.begin();
-            em.remove(customer);
+            em.remove(findCustomerById(customerId));
             userTransaction.commit();
             LOGGER.info(LOG_HEADER + "Customer deleted");
         } catch (Exception e) {
@@ -319,11 +319,11 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     @SuppressWarnings("UseSpecificCatch")
-    public void deleteAccount(Account account) throws EJBException {
+    public void deleteAccount(String accountId) throws EJBException {
         try {
             LOGGER.info(LOG_HEADER + ": Deleting account");
             userTransaction.begin();
-            em.remove(account);
+            em.remove(findAccountById(accountId));
             userTransaction.commit();
             LOGGER.info(LOG_HEADER + ": Account deleted");
         } catch (Exception e) {
@@ -449,14 +449,25 @@ public class BankingEJB implements BankingEJBLocal {
         }
     }
 
-    private Account findAccountTo(String accountTo) throws Exception {
+    private Account findAccountById(String accountTo) throws Exception {
         LOGGER.info(LOG_HEADER + ": Fetching account by ID");
-        List<Account> accounts = em.createNamedQuery("findAccountById",Account.class)
+        List<Account> accounts = em.createNamedQuery("findAccountById")
             .setParameter("accountId", accountTo)
             .getResultList();
         if (accounts == null || accounts.isEmpty()) 
             throw new Exception();
         LOGGER.info(LOG_HEADER + ": Account found");
         return accounts.get(0);
+    }
+    
+    private Customer findCustomerById(Long id) throws Exception {
+        LOGGER.info(LOG_HEADER + ": Fetching customer by ID");
+        List<Customer> customers = em.createNamedQuery("findCustomerById")
+                .setParameter("id", id)
+                .getResultList();
+         if (customers == null || customers.isEmpty()) 
+            throw new Exception();
+        LOGGER.info(LOG_HEADER + ": Customer found");
+        return customers.get(0);
     }
 }
