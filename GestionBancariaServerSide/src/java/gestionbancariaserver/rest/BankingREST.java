@@ -10,6 +10,7 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Transaction;
 import gestionbancariaserver.entity.Customer;
+import gestionbancariaserver.exception.AccountFetchException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,11 +52,7 @@ public class BankingREST {
                     LOG_HEADER + ": Find accounts by user id {0}",
                     id);
             accounts = ejb.findAccountsByCustomerId(id);
-            if (accounts == null || accounts.isEmpty()) {
-                LOGGER.info(LOG_HEADER + ": No accounts found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
+        } catch (AccountFetchException e) {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception finding accounts. {0}",
                     e.getMessage());

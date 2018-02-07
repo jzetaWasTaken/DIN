@@ -9,6 +9,9 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Customer;
 import gestionbancariaserver.entity.Transaction;
+import gestionbancariaserver.exception.AccountFetchException;
+import gestionbancariaserver.exception.CustomerLoginException;
+import gestionbancariaserver.exception.TransactionFetchException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +44,7 @@ public class BankingEJB implements BankingEJBLocal {
     private EntityManager em;
 
     @Override
-    public List<Account> findAccountsByCustomerId(Long id) throws EJBException {
+    public List<Account> findAccountsByCustomerId(Long id) throws AccountFetchException {
         List<Account> accounts = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching accounts by customer");
@@ -49,10 +52,12 @@ public class BankingEJB implements BankingEJBLocal {
                     .setParameter("id", id)
                     .getResultList();
         } catch (Exception e) {
+            /*
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching accounts by customer. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            */
+            throw new AccountFetchException("Error finding accounts", e);
         }
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} accounts found",
@@ -61,7 +66,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findTransactionsByAccount(String accountId) throws EJBException {
+    public List<Transaction> findTransactionsByAccount(String accountId) throws TransactionFetchException {
         List<Transaction> transactions = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
@@ -69,10 +74,12 @@ public class BankingEJB implements BankingEJBLocal {
                     .setParameter("account", accountId)
                     .getResultList();
         } catch (Exception e) {
+            /*
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching transactions by account. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            */
+            throw new TransactionFetchException("Error finding transactions", e);
         }
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} transactions found",
@@ -81,7 +88,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findDepositsByAccount(String accountId) throws EJBException {
+    public List<Transaction> findDepositsByAccount(String accountId) throws TransactionFetchException {
         List<Transaction> deposits = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching deposits by account");
@@ -92,7 +99,7 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching deposits by account. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            throw new TransactionFetchException("Error finding deposits", e);
         }
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} deposits found",
@@ -101,7 +108,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findPaymentsByAccount(String accountId) throws EJBException {
+    public List<Transaction> findPaymentsByAccount(String accountId) throws TransactionFetchException {
         List<Transaction> payments = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching payments by account");
@@ -112,7 +119,7 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching payments by account. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            throw new TransactionFetchException("Error finding deposits", e);
         }
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} payments found",
@@ -121,7 +128,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public List<Transaction> findTransfersByAccount(String accountId) throws EJBException {
+    public List<Transaction> findTransfersByAccount(String accountId) throws TransactionFetchException {
         List<Transaction> transfers = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching transfers by account");
@@ -132,7 +139,7 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching transfers by account. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            throw new TransactionFetchException("Error finding deposits", e);
         }
         LOGGER.log(Level.INFO,
                 LOG_HEADER + ": {0} transfers found",
@@ -141,7 +148,7 @@ public class BankingEJB implements BankingEJBLocal {
     }
 
     @Override
-    public Customer findCustomerByLogin(String login, String passw) throws EJBException {
+    public Customer findCustomerByLogin(String login, String passw) throws CustomerLoginException {
         Customer customer = null;
         try {
             LOGGER.info(LOG_HEADER + ": Fetching customer by login");
@@ -153,7 +160,7 @@ public class BankingEJB implements BankingEJBLocal {
             LOGGER.log(Level.SEVERE,
                     LOG_HEADER + ": Exception fetching customer by ID. {0}",
                     e.getMessage());
-            throw new EJBException(e.getMessage());
+            throw new CustomerLoginException("Error authenticating custmer" ,e);
         }
         LOGGER.info(LOG_HEADER + ": Customer found");
         return customer;
