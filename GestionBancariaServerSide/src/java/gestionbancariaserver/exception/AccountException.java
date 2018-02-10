@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class AccountFetchException extends Exception {
+public class AccountException extends RuntimeException {
 
     /**
-     * Creates a new instance of <code>AccountFetchException</code> without
+     * Creates a new instance of <code>AccountCreateException</code> without
      * detail message.
      */
-    public AccountFetchException() {
+    public AccountException() {
     }
 
     /**
-     * Constructs an instance of <code>AccountFetchException</code> with the
+     * Constructs an instance of <code>AccountCreateException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public AccountFetchException(String msg) {
+    public AccountException(String msg) {
         super(msg);
     }
     
-    public AccountFetchException(String msg, Throwable cause) {
+    public AccountException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

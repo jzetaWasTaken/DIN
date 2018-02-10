@@ -35,37 +35,33 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(
         name="findTransactionsByAccount",
-        query="SELECT t FROM Transaction AS t WHERE EXISTS "
-                + "(SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
-                + "ORDER BY t.timeStamp",
+        query="SELECT t FROM Transaction AS t WHERE t.account.accountId = :accountId ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findDepositsByAccount",
         query="SELECT t FROM Transaction AS t "
-                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.DEPOSIT "
-                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "WHERE t.type = gestionbancariaserver.entity.TransactionType.DEPOSIT "
+                + "AND t.account.accountId = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findTransfersByAccount",
         query="SELECT t FROM Transaction AS t "
-                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.TRANSFER "
-                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "WHERE t.type = gestionbancariaserver.entity.TransactionType.TRANSFER "
+                + "AND t.account.accountId = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findPaymentsByAccount",
         query="SELECT t FROM Transaction AS t "
-                + "WHERE t.type = gestionbancariaserver.entity.Transaction.TransactionType.PAYMENT "
-                + "AND EXISTS (SELECT a FROM Account AS a WHERE a.accountId = :accountId) "
+                + "WHERE t.type = gestionbancariaserver.entity.TransactionType.PAYMENT "
+                + "AND t.account.accountId = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
 })
 @XmlRootElement(name="transaction")
 public class Transaction implements Serializable {
 
-    public static enum TransactionType {DEPOSIT, TRANSFER, PAYMENT}
-    
     private static final long serialVersionUID = 1L;
     
     @Id

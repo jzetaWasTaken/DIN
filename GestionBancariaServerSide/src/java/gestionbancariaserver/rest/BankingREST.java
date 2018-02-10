@@ -10,7 +10,14 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Transaction;
 import gestionbancariaserver.entity.Customer;
-import gestionbancariaserver.exception.AccountFetchException;
+import gestionbancariaserver.exception.AccountException;
+import gestionbancariaserver.exception.BankingBussinessException;
+import gestionbancariaserver.exception.CustomerException;
+import gestionbancariaserver.exception.NoAccountException;
+import gestionbancariaserver.exception.NoCustomerException;
+import gestionbancariaserver.exception.NoTransactionException;
+import gestionbancariaserver.exception.TransactionException;
+import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,7 +40,7 @@ import javax.ws.rs.core.Response;
  *
  * @author jon
  */
-@Path("banking")
+@Path("/banking")
 public class BankingREST {
     
     private static final Logger LOGGER = Logger.getLogger("bankingappserverside");
@@ -42,156 +50,152 @@ public class BankingREST {
     private BankingEJBLocal ejb;
     
     @GET
-    @Path("account/{customerid}")
+    @Path("/account/{customerid}")
     @Produces(MediaType.APPLICATION_XML)
-    @SuppressWarnings("UseSpecificCatch")
-    public List<Account> findAccountsByCustomer(@PathParam("customerid") Long id) {
-        List<Account> accounts = null;
+    public Response findAccountsByCustomer(@PathParam("customerid") Long id) {
+        List<Account> accounts;
+        GenericEntity entity;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find accounts by user id {0}",
-                    id);
             accounts = ejb.findAccountsByCustomerId(id);
-        } catch (AccountFetchException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding accounts. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            entity = new GenericEntity<List<Account>>(accounts) {};
+        } catch (NoAccountException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No accounts found; customerId: {0}",
+                    id);
+            throw new AccountException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching accounts by customer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return accounts;
+        return Response.ok(entity).build();
     }
     
     @GET
-    @Path("transactions/{accountid}")
+    @Path("/transactions/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public List<Transaction> findTransactionsByAccount(@PathParam("accountid") String accountId) {
-        List<Transaction> transactions = null;
+    public Response findTransactionsByAccount(@PathParam("accountid") String accountId) {
+        List<Transaction> transactions;
+        GenericEntity entity;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find transactions by account id {0}",
-                    accountId);
             transactions = ejb.findTransactionsByAccount(accountId);
-            if (transactions == null || transactions.isEmpty()) {
-                LOGGER.info(LOG_HEADER + ": No transactions found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding transactions. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            entity = new GenericEntity<List<Transaction>>(transactions) {};
+        } catch (NoTransactionException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No transactions found; accountId: {0}",
+                    accountId);
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching transactions by account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return transactions;
+        return Response.ok(entity).build();
     }
     
     @GET
-    @Path("deposits/{accountid}")
+    @Path("/deposits/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public List<Transaction> findDepositsByAccount(@PathParam("accountid") String accountId) {
-        List<Transaction> transactions = null;
+    public Response findDepositsByAccount(@PathParam("accountid") String accountId) {
+        List<Transaction> transactions;
+        GenericEntity entity;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find deposits by account id {0}",
-                    accountId);
             transactions = ejb.findDepositsByAccount(accountId);
-            if (transactions == null || transactions.isEmpty()) {
-                LOGGER.info(LOG_HEADER + ": No deposits found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding deposits. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            entity = new GenericEntity<List<Transaction>>(transactions) {};
+        } catch (NoTransactionException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No deposits found; accountId: {0}",
+                    accountId);
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching deposits by account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return transactions;
+        return Response.ok(entity).build();
     }
     
     @GET
-    @Path("payments/{accountid}")
+    @Path("/payments/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public List<Transaction> findPaymentsByAccount(@PathParam("accountid") String accountId) {
-        List<Transaction> transactions = null;
+    public Response findPaymentsByAccount(@PathParam("accountid") String accountId) {
+        List<Transaction> transactions;
+        GenericEntity entity;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find payments by account id {0}",
-                    accountId);
             transactions = ejb.findPaymentsByAccount(accountId);
-            if (transactions == null || transactions.isEmpty()) {
-                LOGGER.info(LOG_HEADER + ": No payments found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding payments. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
-        return transactions;
-    }
-    
-    @GET
-    @Path("transfers/{accountid}")
-    @Produces(MediaType.APPLICATION_XML)
-    public List<Transaction> findTransfersByAccount(@PathParam("accountid") String accountId) {
-        List<Transaction> transactions = null;
-        try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find transfers by account id {0}",
+            entity = new GenericEntity<List<Transaction>>(transactions) {};
+        } catch (NoTransactionException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No payments found; accountId: {0}",
                     accountId);
-            transactions = ejb.findTransfersByAccount(accountId);
-            if (transactions == null || transactions.isEmpty()) {
-                LOGGER.info(LOG_HEADER + ": No transfers found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding transfers. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching payments by account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return transactions;
+        return Response.ok(entity).build();
     }
     
     @GET
-    @Path("login/{login}-{passw}")
+    @Path("/transfers/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public Customer findCustomerByLogin(@PathParam("login") String login, @PathParam("passw") String passw) {
-        Customer customer = null;
+    public Response findTransfersByAccount(@PathParam("accountid") String accountId) {
+        List<Transaction> transactions;
+        GenericEntity entity;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Find customer by login {0}",
-                    login);
-            customer = ejb.findCustomerByLogin(login, passw);
-            if (customer == null) {
-                LOGGER.info(LOG_HEADER + ": No customer found");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception finding customer. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            transactions = ejb.findTransfersByAccount(accountId);
+            entity = new GenericEntity<List<Transaction>>(transactions) {};
+        } catch (NoTransactionException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No payments found; accountId: {0}",
+                    accountId);
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching payments by account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return customer;
+        return Response.ok(entity).build();
     }
+    
+    @GET
+    @Path("/login/{login}-{passw}")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response findCustomerByLogin(@PathParam("login") String login) {
+        List<Customer> customers;
+        GenericEntity entity;
+        try {
+            customers = ejb.findCustomersByLogin(login);
+            entity = new GenericEntity<List<Customer>>(customers) {};
+        } catch (NoCustomerException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No customers found; login: {0}",
+                    login);
+            throw new CustomerException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception fetching customers by login");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
+        }
+        return Response.ok(entity).build();
+    }
+    
+    // TODO check authenticateCustomer
     
     @POST
-    @Path("customer")
+    @Path("/customers")
     @Consumes(MediaType.APPLICATION_XML)
-    public void createCustomer(Customer customer) {
+    public Response createCustomer(Customer customer) {
+        Customer newCustomer;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Creating customer {0}",
-                    customer);
-            ejb.createCustomer(customer);
-            LOGGER.info(LOG_HEADER + ": Customer created");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception creating customer. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            newCustomer = ejb.createCustomer(customer);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception creating customer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.created(URI.create("/customers/" 
+                + String.valueOf(newCustomer.getId()))).build();
     }
     
     @POST
@@ -376,60 +380,6 @@ public class BankingREST {
     @Produces(MediaType.APPLICATION_XML)
     public List<Transaction> findDepositsByAccount(Account account) {
         
-    }
-    
-    
-    @POST
-    @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Account entity) {
-        super.create(entity);
-    }
-
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") String id, Account entity) {
-        super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") String id) {
-        super.remove(super.find(id));
-    }
-
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Account find(@PathParam("id") String id) {
-        return super.find(id);
-    }
-
-    @GET
-    @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Account> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Account> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
     */
 }

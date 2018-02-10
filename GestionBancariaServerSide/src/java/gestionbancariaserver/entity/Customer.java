@@ -34,21 +34,32 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "CUSTOMER", schema = "BANK_MANAGEMENT_DB")
 @NamedQueries({
     @NamedQuery(
+            name = "findCustomersByLogin",
+            query = "SELECT c FROM Customer AS c WHERE c.credentials.login = :login",
+            lockMode = LockModeType.NONE),
+    @NamedQuery(
             name = "findCustomerById",
             query = "SELECT c FROM Customer AS c WHERE c.id = :id",
             lockMode = LockModeType.NONE),
     @NamedQuery(
-            name = "findCustomerByLogin",
-            query = "SELECT c FROM Customer AS c JOIN c.credentials AS cr WHERE "
-                    + "cr.login = :login and cr.passw = :passw",
+            name = "findCustomerByIdPassword",
+            query = "SELECT c FROM Customer AS c "
+                    + "WHERE c.id = :id AND c.credentials.password = :password",
             lockMode = LockModeType.NONE)
 })
 @XmlRootElement(name="customer")
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     private Long id;
+    
+    @OneToOne(cascade = javax.persistence.CascadeType.ALL,
+            fetch = javax.persistence.FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name="id")
+    private Credential credentials;
 
     @NotNull
     @Column(name = "LAST_NAME")
@@ -85,10 +96,6 @@ public class Customer implements Serializable {
     @Column(name = "BIRTH_DATE")
     private Date birthDate;
     
-    @OneToOne(cascade = javax.persistence.CascadeType.ALL,
-            fetch = javax.persistence.FetchType.LAZY)
-    private Credential credentials;
-
     @ManyToMany(fetch = javax.persistence.FetchType.LAZY)
     @JoinTable(name = "CUSTOMER_ACCOUNTS",
             schema = "BANK_MANAGEMENT_DB",

@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class CustomerDeleteException extends Exception {
+public class TransactionException extends RuntimeException {
 
     /**
-     * Creates a new instance of <code>CustomerDeleteException</code> without
+     * Creates a new instance of <code>TransactionCreateException</code> without
      * detail message.
      */
-    public CustomerDeleteException() {
+    public TransactionException() {
     }
 
     /**
-     * Constructs an instance of <code>CustomerDeleteException</code> with the
-     * specified detail message.
+     * Constructs an instance of <code>TransactionCreateException</code> with
+     * the specified detail message.
      *
      * @param msg the detail message.
      */
-    public CustomerDeleteException(String msg) {
+    public TransactionException(String msg) {
         super(msg);
     }
     
-    public CustomerDeleteException(String msg, Throwable cause) {
+    public TransactionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

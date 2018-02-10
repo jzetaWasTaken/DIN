@@ -44,8 +44,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="account")
 public class Account implements Serializable {
 
-    public static enum AccountType {SAVINGS, CHECK, CREDIT}
-    
     private static final long serialVersionUID = 1L;
     
     @Id

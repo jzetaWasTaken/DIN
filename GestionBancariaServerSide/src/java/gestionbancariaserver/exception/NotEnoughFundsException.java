@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class CustomerUpdateException extends Exception {
+public class NotEnoughFundsException extends Exception {
 
     /**
-     * Creates a new instance of <code>CustomerUpdateException</code> without
+     * Creates a new instance of <code>NotEnoughFundsException</code> without
      * detail message.
      */
-    public CustomerUpdateException() {
+    public NotEnoughFundsException() {
     }
 
     /**
-     * Constructs an instance of <code>CustomerUpdateException</code> with the
+     * Constructs an instance of <code>NotEnoughFundsException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public CustomerUpdateException(String msg) {
+    public NotEnoughFundsException(String msg) {
         super(msg);
     }
     
-    public CustomerUpdateException(String msg, Throwable cause) {
+    public NotEnoughFundsException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

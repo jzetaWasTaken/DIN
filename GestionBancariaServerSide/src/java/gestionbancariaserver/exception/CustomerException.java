@@ -9,13 +9,13 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class CustomerCreateException extends Exception {
+public class CustomerException extends RuntimeException {
 
     /**
      * Creates a new instance of <code>CustomerCreateException</code> without
      * detail message.
      */
-    public CustomerCreateException() {
+    public CustomerException() {
     }
 
     /**
@@ -24,11 +24,11 @@ public class CustomerCreateException extends Exception {
      *
      * @param msg the detail message.
      */
-    public CustomerCreateException(String msg) {
+    public CustomerException(String msg) {
         super(msg);
     }
     
-    public CustomerCreateException(String msg, Throwable cause) {
+    public CustomerException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

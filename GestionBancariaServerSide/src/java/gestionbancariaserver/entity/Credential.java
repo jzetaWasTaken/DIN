@@ -11,12 +11,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.LockModeType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,12 +22,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name="CREDENTIAL", schema="BANK_MANAGEMENT_DB")
-@NamedQueries({
-    @NamedQuery(
-        name="findCustomerIdByLogin",
-        query="SELECT c.id FROM Credential AS c WHERE c.login = :login AND c.passw = :passw",
-        lockMode = LockModeType.NONE)
-})
+@XmlRootElement(name="credential")
 public class Credential implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +34,7 @@ public class Credential implements Serializable {
     private String login;
     
     @NotNull
-    private String passw;
+    private String password;
             
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastModifiedOn;
@@ -68,12 +61,12 @@ public class Credential implements Serializable {
         this.login = login;
     }
 
-    public String getPassw() {
-        return passw;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPassw(String passw) {
-        this.passw = passw;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Date getLastModifiedOn() {

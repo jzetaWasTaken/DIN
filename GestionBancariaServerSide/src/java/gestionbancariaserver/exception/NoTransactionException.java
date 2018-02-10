@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class TransactionFetchException extends Exception {
+public class NoTransactionException extends Exception {
 
     /**
-     * Creates a new instance of <code>TransactionFetchException</code> without
+     * Creates a new instance of <code>NoTransactionException</code> without
      * detail message.
      */
-    public TransactionFetchException() {
+    public NoTransactionException() {
     }
 
     /**
-     * Constructs an instance of <code>TransactionFetchException</code> with the
+     * Constructs an instance of <code>NoTransactionException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public TransactionFetchException(String msg) {
+    public NoTransactionException(String msg) {
         super(msg);
     }
     
-    public TransactionFetchException(String msg, Throwable cause) {
+    public NoTransactionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

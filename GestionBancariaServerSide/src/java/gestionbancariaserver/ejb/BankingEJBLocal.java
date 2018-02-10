@@ -9,19 +9,12 @@ import gestionbancariaserver.entity.Account;
 import gestionbancariaserver.entity.Credential;
 import gestionbancariaserver.entity.Customer;
 import gestionbancariaserver.entity.Transaction;
-import gestionbancariaserver.exception.AccountCreateException;
-import gestionbancariaserver.exception.AccountDeleteException;
-import gestionbancariaserver.exception.AccountFetchException;
-import gestionbancariaserver.exception.AccountUpdateException;
-import gestionbancariaserver.exception.CredentialUpdateException;
-import gestionbancariaserver.exception.CustomerCreateException;
-import gestionbancariaserver.exception.CustomerDeleteException;
 import gestionbancariaserver.exception.CustomerLoginException;
-import gestionbancariaserver.exception.CustomerUpdateException;
-import gestionbancariaserver.exception.TransactionCreateException;
-import gestionbancariaserver.exception.TransactionFetchException;
+import gestionbancariaserver.exception.NoAccountException;
+import gestionbancariaserver.exception.NoCustomerException;
+import gestionbancariaserver.exception.NoTransactionException;
+import gestionbancariaserver.exception.NotEnoughFundsException;
 import java.util.List;
-import javax.ejb.EJBException;
 import javax.ejb.Local;
 
 /**
@@ -31,21 +24,30 @@ import javax.ejb.Local;
 @Local
 public interface BankingEJBLocal {
         
-    public List<Account> findAccountsByCustomerId(Long id) throws AccountFetchException;
-    public List<Transaction> findTransactionsByAccount(String accountId) throws TransactionFetchException;
-    public List<Transaction> findDepositsByAccount(String accountId) throws TransactionFetchException;
-    public List<Transaction> findPaymentsByAccount(String accountId) throws TransactionFetchException;
-    public List<Transaction> findTransfersByAccount(String accountId) throws TransactionFetchException;
-    public Customer findCustomerByLogin(String login, String passw) throws CustomerLoginException;
-    public void createCustomer(Customer customer) throws CustomerCreateException;
-    public void createAccount(Account account) throws AccountCreateException;
-    public void makeDeposit(Transaction transaction) throws TransactionCreateException;
-    public void makePayment(Transaction transaction) throws TransactionCreateException;
-    public void makeTransfer(Transaction transaction, String accountToId) throws TransactionCreateException;
-    public void deleteCustomer(Long customerId) throws CustomerDeleteException;
-    public void deleteAccount(String accountId) throws AccountDeleteException;
-    public void updateCustomer(Customer custmer) throws CustomerUpdateException;
-    public void updateAccount(Account account) throws AccountUpdateException;
-    public void updateCredential(Credential credential) throws CredentialUpdateException;
-    public void updateSignedIn(Credential credential) throws CredentialUpdateException;
+    public List<Account> findAccountsByCustomerId(Long id) 
+            throws NoAccountException, Exception;
+    public List<Transaction> findTransactionsByAccount(String accountId) 
+            throws NoTransactionException, Exception;
+    public List<Transaction> findDepositsByAccount(String accountId) 
+            throws NoTransactionException, Exception;
+    public List<Transaction> findPaymentsByAccount(String accountId) 
+            throws NoTransactionException, Exception;
+    public List<Transaction> findTransfersByAccount(String accountId) 
+            throws NoTransactionException, Exception;
+    public List<Customer> findCustomersByLogin(String login) 
+            throws NoCustomerException, Exception;
+    public Customer authenticateCustomer(Long id, String password) 
+            throws CustomerLoginException, Exception;
+    public Customer createCustomer(Customer customer) throws Exception;
+    public void createAccount(Account account) throws Exception;
+    public void makeDeposit(Transaction transaction) throws Exception;
+    public void makePayment(Transaction transaction) 
+            throws NotEnoughFundsException, Exception;
+    public void makeTransfer(Transaction transaction, String accountToId) 
+            throws NoAccountException, NotEnoughFundsException, Exception;
+    public void deleteCustomer(Long customerId) throws Exception;
+    public void deleteAccount(String accountId) throws Exception;
+    public void updateCustomer(Customer custmer) throws Exception;
+    public void updateAccount(Account account) throws Exception;
+    public void updateCredential(Credential credential) throws Exception;
 }

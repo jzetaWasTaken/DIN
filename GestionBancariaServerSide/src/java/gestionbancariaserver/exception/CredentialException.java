@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class AccountDeleteException extends Exception {
+public class CredentialException extends RuntimeException {
 
     /**
-     * Creates a new instance of <code>AccountDeleteException</code> without
+     * Creates a new instance of <code>CredentialUpdateException</code> without
      * detail message.
      */
-    public AccountDeleteException() {
+    public CredentialException() {
     }
 
     /**
-     * Constructs an instance of <code>AccountDeleteException</code> with the
+     * Constructs an instance of <code>CredentialUpdateException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public AccountDeleteException(String msg) {
+    public CredentialException(String msg) {
         super(msg);
     }
     
-    public AccountDeleteException(String msg, Throwable cause) {
+    public CredentialException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class AccountUpdateException extends Exception {
+public class NoCustomerException extends Exception {
 
     /**
-     * Creates a new instance of <code>AccountUpdateException</code> without
-     * detail message.
+     * Creates a new instance of <code>NoCustomerException</code> without detail
+     * message.
      */
-    public AccountUpdateException() {
+    public NoCustomerException() {
     }
 
     /**
-     * Constructs an instance of <code>AccountUpdateException</code> with the
+     * Constructs an instance of <code>NoCustomerException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public AccountUpdateException(String msg) {
+    public NoCustomerException(String msg) {
         super(msg);
     }
     
-    public AccountUpdateException(String msg, Throwable cause) {
+    public NoCustomerException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

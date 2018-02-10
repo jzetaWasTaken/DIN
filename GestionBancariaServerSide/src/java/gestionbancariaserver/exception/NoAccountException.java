@@ -9,26 +9,26 @@ package gestionbancariaserver.exception;
  *
  * @author jon
  */
-public class CredentialUpdateException extends Exception {
+public class NoAccountException extends Exception {
 
     /**
-     * Creates a new instance of <code>CredentialUpdateException</code> without
-     * detail message.
+     * Creates a new instance of <code>NoAccountException</code> without detail
+     * message.
      */
-    public CredentialUpdateException() {
+    public NoAccountException() {
     }
 
     /**
-     * Constructs an instance of <code>CredentialUpdateException</code> with the
+     * Constructs an instance of <code>NoAccountException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public CredentialUpdateException(String msg) {
+    public NoAccountException(String msg) {
         super(msg);
     }
     
-    public CredentialUpdateException(String msg, Throwable cause) {
+    public NoAccountException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }
