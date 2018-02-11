@@ -148,10 +148,10 @@ public class BankingEJB implements BankingEJBLocal {
                 .setParameter("password", password)
                 .getResultList();
         if (customers.isEmpty()) 
-            throw new CustomerLoginException("Invalid login or password");
-        LOGGER.info(LOG_HEADER + ": Login successful");
+            throw new CustomerLoginException("Invalid password");
         Customer customer = customers.get(0);
         updateLastAccess(customer);
+        LOGGER.info(LOG_HEADER + ": Login successful");
         return customer;
     }
     
@@ -169,16 +169,19 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void createAccount(Account account) throws Exception {
+    public Account createAccount(Account account) throws Exception {
         LOGGER.info(LOG_HEADER + ": Creating account");
         account.setBeginBalanceDate(new Date());
         em.persist(account);
+        em.flush();
+        em.refresh(account);
         LOGGER.info(LOG_HEADER + ": Account created");
+        return account;
     }
     
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void makeDeposit(Transaction transaction) throws Exception {
+    public Transaction makeDeposit(Transaction transaction) throws Exception {
         LOGGER.info(LOG_HEADER + ": Making money deposit");
         Account account = transaction.getAccount();
         BigDecimal newBalance = 
@@ -190,12 +193,15 @@ public class BankingEJB implements BankingEJBLocal {
         transaction.setTimeStamp(new Date());
         transaction.setType(TransactionType.DEPOSIT);
         em.persist(transaction);
+        em.flush();
+        em.refresh(transaction);
         LOGGER.info(LOG_HEADER + ": Deposit made");
+        return transaction;
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void makePayment(Transaction transaction) 
+    public Transaction makePayment(Transaction transaction) 
             throws NotEnoughFundsException, Exception {
         LOGGER.info(LOG_HEADER + ": Making money payment");
         Account account = transaction.getAccount();
@@ -209,16 +215,18 @@ public class BankingEJB implements BankingEJBLocal {
         transaction.setTimeStamp(new Date());
         transaction.setType(TransactionType.PAYMENT);
         em.persist(transaction);
+        em.flush();
+        em.refresh(transaction);
         LOGGER.info(LOG_HEADER + ": Payment made");
-      
+        return transaction;
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void makeTransfer(Transaction transaction, String accountToId) 
+    public Transaction makeTransfer(Transaction transaction, String accountToNumber) 
             throws NoAccountException, NotEnoughFundsException, Exception {
         LOGGER.info(LOG_HEADER + ": Making money transfer");
-        Account accountTo =  findAccountById(accountToId);
+        Account accountTo =  findAccountByNumber(accountToNumber);
         Account accountFrom = transaction.getAccount();
         BigDecimal newBalance = 
                 accountFrom.getBalance().subtract(transaction.getAmount());
@@ -243,7 +251,10 @@ public class BankingEJB implements BankingEJBLocal {
                 TransactionType.DEPOSIT, 
                 accountTo);
         em.persist(transaction);
+        em.flush();
+        em.refresh(transaction);
         LOGGER.info(LOG_HEADER + ": Transfer made");
+        return transaction;
     }
     
     @Override
@@ -257,7 +268,7 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void deleteAccount(String accountId) 
+    public void deleteAccount(Long accountId) 
             throws NoAccountException, Exception {
         LOGGER.info(LOG_HEADER + ": Deleting account");
         em.remove(findAccountById(accountId));
@@ -282,7 +293,7 @@ public class BankingEJB implements BankingEJBLocal {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void updateCredential(Credential credential) throws Exception {
+    public void updatePassword(Credential credential) throws Exception {
         LOGGER.info(LOG_HEADER + ": Updating credentials");
         credential.setLastModifiedOn(new Date());
         em.merge(credential);
@@ -306,16 +317,16 @@ public class BankingEJB implements BankingEJBLocal {
             balance = account.getBalance();
         }
         if (balance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new NotEnoughFundsException();
+            throw new NotEnoughFundsException("Not enough funds");
         }
     }
 
-    private Account findAccountById(String accountTo) throws NoAccountException {
+    private Account findAccountByNumber(String accountTo) throws NoAccountException {
         LOGGER.info(LOG_HEADER + ": Fetching account by ID");
-        List<Account> accounts = em.createNamedQuery("findAccountById")
-            .setParameter("accountId", accountTo)
+        List<Account> accounts = em.createNamedQuery("findAccountByNumber")
+            .setParameter("accountNumber", accountTo)
             .getResultList();
-        if (accounts == null || accounts.isEmpty()) 
+        if (accounts.isEmpty()) 
             throw new NoAccountException("The account does not exist");
         LOGGER.info(LOG_HEADER + ": Account found");
         return accounts.get(0);
@@ -330,5 +341,16 @@ public class BankingEJB implements BankingEJBLocal {
             throw new NoCustomerException("Customer not found");
         LOGGER.info(LOG_HEADER + ": Customer found");
         return customers.get(0);
+    }
+
+    private Object findAccountById(Long accountId) throws NoAccountException {
+        LOGGER.info(LOG_HEADER + ": Fetching account by ID");
+        List<Account> accounts = em.createNamedQuery("findAccountById")
+            .setParameter("accountId", accountId)
+            .getResultList();
+        if (accounts.isEmpty()) 
+            throw new NoAccountException("The account does not exist");
+        LOGGER.info(LOG_HEADER + ": Account found");
+        return accounts.get(0);
     }
 }

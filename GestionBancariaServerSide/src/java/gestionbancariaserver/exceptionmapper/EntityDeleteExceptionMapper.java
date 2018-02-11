@@ -5,7 +5,7 @@
  */
 package gestionbancariaserver.exceptionmapper;
 
-import gestionbancariaserver.exception.TransactionException;
+import gestionbancariaserver.exception.EntityDeleteException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -13,13 +13,14 @@ import javax.ws.rs.ext.ExceptionMapper;
  *
  * @author jon
  */
-public class TransactionExceptionMapper 
-        implements ExceptionMapper<TransactionException> {
-    
+public class EntityDeleteExceptionMapper
+        implements ExceptionMapper<EntityDeleteException> {
+
     @Override
-    public Response toResponse(TransactionException exception) {
-        return Response.status(Response.Status.CONFLICT)
+    public Response toResponse(EntityDeleteException exception) {
+        return Response.status(Response.Status.GONE)
                 .entity(exception.getCause().getMessage())
                 .build();
     }
+    
 }

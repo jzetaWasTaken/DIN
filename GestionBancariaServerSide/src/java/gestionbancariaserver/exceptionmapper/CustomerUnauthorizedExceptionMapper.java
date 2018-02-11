@@ -5,7 +5,7 @@
  */
 package gestionbancariaserver.exceptionmapper;
 
-import gestionbancariaserver.exception.TransactionException;
+import gestionbancariaserver.exception.CustomerUnauthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -13,13 +13,14 @@ import javax.ws.rs.ext.ExceptionMapper;
  *
  * @author jon
  */
-public class TransactionExceptionMapper 
-        implements ExceptionMapper<TransactionException> {
-    
+public class CustomerUnauthorizedExceptionMapper
+        implements ExceptionMapper<CustomerUnauthorizedException>{
+
     @Override
-    public Response toResponse(TransactionException exception) {
-        return Response.status(Response.Status.CONFLICT)
+    public Response toResponse(CustomerUnauthorizedException exception) {
+        return Response.status(Response.Status.UNAUTHORIZED)
                 .entity(exception.getCause().getMessage())
                 .build();
     }
+    
 }

@@ -13,9 +13,13 @@ import gestionbancariaserver.entity.Customer;
 import gestionbancariaserver.exception.AccountException;
 import gestionbancariaserver.exception.BankingBussinessException;
 import gestionbancariaserver.exception.CustomerException;
+import gestionbancariaserver.exception.CustomerLoginException;
+import gestionbancariaserver.exception.CustomerUnauthorizedException;
+import gestionbancariaserver.exception.EntityDeleteException;
 import gestionbancariaserver.exception.NoAccountException;
 import gestionbancariaserver.exception.NoCustomerException;
 import gestionbancariaserver.exception.NoTransactionException;
+import gestionbancariaserver.exception.NotEnoughFundsException;
 import gestionbancariaserver.exception.TransactionException;
 import java.net.URI;
 import java.util.List;
@@ -35,6 +39,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  *
@@ -45,12 +50,15 @@ public class BankingREST {
     
     private static final Logger LOGGER = Logger.getLogger("bankingappserverside");
     private static final String LOG_HEADER = "BankingREST";
+    private static final String CUSTOMER_CREATED = "Customer created; id: %s";
+    private static final String ACCOUNT_CREATED = "Account created; id: %s";
+    private static final String TRANSACTION_MADE = "Transaction made; id: %s";
 
     @EJB
     private BankingEJBLocal ejb;
     
     @GET
-    @Path("/account/{customerid}")
+    @Path("/accounts/{customerid}")
     @Produces(MediaType.APPLICATION_XML)
     public Response findAccountsByCustomer(@PathParam("customerid") Long id) {
         List<Account> accounts;
@@ -160,7 +168,7 @@ public class BankingREST {
     }
     
     @GET
-    @Path("/login/{login}-{passw}")
+    @Path("/login/{login}")
     @Produces(MediaType.APPLICATION_XML)
     public Response findCustomerByLogin(@PathParam("login") String login) {
         List<Customer> customers;
@@ -181,7 +189,27 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
-    // TODO check authenticateCustomer
+    @GET
+    @Path("/login/{id}-{password}")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response authenticateCustomer(
+            @PathParam("id") Long id, @PathParam("password") String password) {
+        Customer customer;
+        try {
+            customer = ejb.authenticateCustomer(id, password);
+        } catch (CustomerLoginException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": Wrong pasword for user id: {0}",
+                    id);
+            throw new CustomerUnauthorizedException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception authenticating customer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
+        }
+        return Response.ok(customer).build();
+    }
+    
     
     @POST
     @Path("/customers")
@@ -194,192 +222,175 @@ public class BankingREST {
             LOGGER.severe(LOG_HEADER + ": Exception creating customer");
             throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
-        return Response.created(URI.create("/customers/" 
-                + String.valueOf(newCustomer.getId()))).build();
+        return Response.status(Status.CREATED)
+                .entity(String.format(
+                        CUSTOMER_CREATED, 
+                        Long.toString(newCustomer.getId())))
+                .build();
     }
     
     @POST
-    @Path("account")
+    @Path("/accounts")
     @Consumes(MediaType.APPLICATION_XML)
-    public void createAccount(Account account) {
+    public Response createAccount(Account account) {
+        Account newAccount;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Creating account {0}",
-                    account);
-            ejb.createAccount(account);
-            LOGGER.info(LOG_HEADER + ": Account created");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception creating account. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            newAccount = ejb.createAccount(account);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception creating account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.CREATED)
+                .entity(String.format(
+                        ACCOUNT_CREATED,
+                        Long.toString(newAccount.getId())))
+                .build();
     }
     
     @POST
-    @Path("deposit")
+    @Path("/deposits")
     @Consumes(MediaType.APPLICATION_XML)
-    public void makeDeposit(Transaction transaction) {
+    public Response makeDeposit(Transaction transaction) {
+        Transaction deposit;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Making deposit {0}",
-                    transaction);
-            ejb.makeDeposit(transaction);
-            LOGGER.info(LOG_HEADER + ": Deposit made");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception making deposit. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            deposit = ejb.makeDeposit(transaction);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception making deposit");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.CREATED)
+                .entity(String.format(
+                        TRANSACTION_MADE,
+                        Long.toString(deposit.getId())))
+                .build();
     }
     
     @POST
-    @Path("payment")
+    @Path("/payments")
     @Consumes(MediaType.APPLICATION_XML)
-    public void makePayment(Transaction transaction) {
+    public Response makePayment(Transaction transaction) {
+        Transaction payment;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Making payment {0}",
-                    transaction);
-            ejb.makePayment(transaction);
-            LOGGER.info(LOG_HEADER + ": Payment made");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception making payment. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            payment = ejb.makePayment(transaction);
+        } catch (NotEnoughFundsException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": Not enough funds; requested: {0}",
+                    transaction.getAmount());
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception making payment");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.CREATED)
+                .entity(String.format(
+                        TRANSACTION_MADE,
+                        Long.toString(payment.getId())))
+                .build();
     }
     
     @POST
-    @Path("transfer/{accountto}")
+    @Path("/transfers/{accountto}")
     @Consumes(MediaType.APPLICATION_XML)
-    public void makeTransfer(Transaction transaction, @PathParam("accountto") String accountToId) {
+    public Response makeTransfer(Transaction transaction, @PathParam("accountto") String accountNumber) {
+        Transaction transfer;
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Making transfer {0}",
-                    transaction);
-            ejb.makeTransfer(transaction, accountToId);
-            LOGGER.info(LOG_HEADER + ": Transfer made");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception making transfer. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            transfer = ejb.makeTransfer(transaction, accountNumber);
+        } catch (NoAccountException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": No accounts found; accountNumber: {0}",
+                    accountNumber);
+            throw new AccountException(e.getMessage(), e);
+        } catch (NotEnoughFundsException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    LOG_HEADER + ": Not enough funds; requested: {0}",
+                    transaction.getAmount());
+            throw new TransactionException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception making transfer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.CREATED)
+                .entity(String.format(
+                        TRANSACTION_MADE,
+                        Long.toString(transfer.getId())))
+                .build();
     }
     
     @DELETE
-    @Path("customer/delete/{customerid}")
-    public void deleteCustomer(@PathParam("customerid")Long customerId) {
+    @Path("/customers/delete/{customerid}")
+    public Response deleteCustomer(@PathParam("customerid")Long customerId) {
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Deleting user with id {0}",
-                    customerId);
             ejb.deleteCustomer(customerId);
-            LOGGER.info(LOG_HEADER + ": User deleted");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception deleting user. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (NoCustomerException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    LOG_HEADER + ": Customer with id {0} no longer exists",
+                    customerId);
+            throw new EntityDeleteException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception deleting customer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.NO_CONTENT).build();
     }
     
     @DELETE
-    @Path("account/delete/{accountid}")
-    public void deleteAccount(@PathParam("accountid")String accountId) {
+    @Path("/accounts/delete/{accountid}")
+    public Response deleteAccount(@PathParam("accountid")Long accountId) {
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Deleting account with id {0}",
-                    accountId);
             ejb.deleteAccount(accountId);
-            LOGGER.info(LOG_HEADER + ": Account deleted");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception deleting account. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (NoAccountException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    LOG_HEADER + ": Account with id {0} no longer exists",
+                    accountId);
+            throw new EntityDeleteException(e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception deleting account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.NO_CONTENT).build();
     }
     
     @PUT
-    @Path("customer/update")
+    @Path("/customers/update")
     @Consumes(MediaType.APPLICATION_XML)
-    public void updateCustomer(Customer customer) {
+    public Response updateCustomer(Customer customer) {
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Updating customer {0}",
-                    customer);
             ejb.updateCustomer(customer);
-            LOGGER.info(LOG_HEADER + ": Customer updated");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception updating customer. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception updating customer");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.NO_CONTENT).build();
     }
     
     @PUT
-    @Path("account/update")
+    @Path("/accounts/update")
     @Consumes(MediaType.APPLICATION_XML)
-    public void updateAccount(Account account) {
+    public Response updateAccount(Account account) {
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Updating account {0}",
-                    account);
             ejb.updateAccount(account);
-            LOGGER.info(LOG_HEADER + ": Account updated");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception updating account. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception updating account");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.NO_CONTENT).build();
     }
     
     @PUT
-    @Path("credentials/update")
+    @Path("/credentials/update")
     @Consumes(MediaType.APPLICATION_XML)
-    public void updateCredential(Credential credential) {
+    public Response updateCustomerPassword(Credential credential) {
         try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Updating credentials {0}",
-                    credential);
-            ejb.updateCredential(credential);
-            LOGGER.info(LOG_HEADER + ": Credentials updated");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception updating credentials. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+            ejb.updatePassword(credential);
+        } catch (Exception e) {
+            LOGGER.severe(LOG_HEADER + ": Exception updating password");
+            throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        return Response.status(Status.NO_CONTENT).build();
     }
-    
-    @PUT
-    @Path("lastaccess/update")
-    @Consumes(MediaType.APPLICATION_XML)
-    public void updateSignedIn(Credential credential) {
-        try {
-            LOGGER.log(Level.INFO,
-                    LOG_HEADER + ": Updating last access date {0}",
-                    credential);
-            ejb.updateSignedIn(credential);
-            LOGGER.info(LOG_HEADER + ": Last access date updated");
-        } catch (EJBException e) {
-            LOGGER.log(Level.SEVERE,
-                    LOG_HEADER + ": Exception updating last access date. {0}",
-                    e.getMessage());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-    /*
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public List<Transaction> findDepositsByAccount(Account account) {
-        
-    }
-    */
 }

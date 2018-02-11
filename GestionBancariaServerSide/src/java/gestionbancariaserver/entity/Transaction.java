@@ -67,7 +67,7 @@ public class Transaction implements Serializable {
     @Id
     @Column(name="TRANSACTION_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer transactionId;
+    private Integer id;
     
     @Temporal(DATE)
     @Column(name="TIME_STAMP")
@@ -100,12 +100,12 @@ public class Transaction implements Serializable {
         this.account = account;
     }
     
-    public Integer getTransactionId() {
-        return transactionId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setTransactionId(Integer transactionId) {
-        this.transactionId = transactionId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Date getTimeStamp() {
@@ -159,7 +159,7 @@ public class Transaction implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (transactionId != null ? transactionId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -169,7 +169,7 @@ public class Transaction implements Serializable {
             return false;
         }
         Transaction other = (Transaction) object;
-        if ((this.transactionId == null && other.transactionId != null) || (this.transactionId != null && !this.transactionId.equals(other.transactionId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -177,7 +177,7 @@ public class Transaction implements Serializable {
 
     @Override
     public String toString() {
-        return "gestionbancariaserver.entity.Transaction[ id=" + transactionId + " ]";
+        return "gestionbancariaserver.entity.Transaction[ id=" + id + " ]";
     }
     
 }

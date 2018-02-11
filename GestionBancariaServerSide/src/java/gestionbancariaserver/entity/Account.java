@@ -13,6 +13,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import static javax.persistence.EnumType.STRING;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.LockModeType;
 import javax.persistence.ManyToMany;
@@ -38,7 +40,11 @@ import javax.xml.bind.annotation.XmlRootElement;
             lockMode = LockModeType.NONE),
     @NamedQuery(
             name="findAccountById",
-            query="SELECT a FROM Account AS a WHERE a.accountId = :accountId",
+            query="SELECT a FROM Account AS a WHERE a.id = :accountId",
+            lockMode = LockModeType.NONE),
+    @NamedQuery(
+            name="findAccountByNumber",
+            query="SELECT a FROM Account AS a WHERE a.accountNumber = :accountNumber",
             lockMode = LockModeType.NONE)
 })
 @XmlRootElement(name="account")
@@ -47,8 +53,11 @@ public class Account implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @Column(name="ACCOUNT_ID")
-    private String accountId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    
+    @Column(name="ACCOUNT_NUMER", unique=true)
+    private String accountNumber;
     
     @Enumerated(STRING)
     private AccountType type;
@@ -76,13 +85,21 @@ public class Account implements Serializable {
             fetch = javax.persistence.FetchType.LAZY,
             cascade = javax.persistence.CascadeType.REMOVE)
     private Collection<Transaction> transactions;
-    
-    public String getAccountId() {
-        return accountId;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public AccountType getType() {
@@ -154,7 +171,7 @@ public class Account implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (accountId != null ? accountId.hashCode() : 0);
+        hash += (accountNumber != null ? accountNumber.hashCode() : 0);
         return hash;
     }
 
@@ -164,7 +181,7 @@ public class Account implements Serializable {
             return false;
         }
         Account other = (Account) object;
-        if ((this.accountId == null && other.accountId != null) || (this.accountId != null && !this.accountId.equals(other.accountId))) {
+        if ((this.accountNumber == null && other.accountNumber != null) || (this.accountNumber != null && !this.accountNumber.equals(other.accountNumber))) {
             return false;
         }
         return true;
@@ -172,7 +189,7 @@ public class Account implements Serializable {
 
     @Override
     public String toString() {
-        return "gestionbancariaserver.entity.Account[ id=" + accountId + " ]";
+        return "gestionbancariaserver.entity.Account[ id=" + accountNumber + " ]";
     }
     
 }

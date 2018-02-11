@@ -39,15 +39,15 @@ public interface BankingEJBLocal {
     public Customer authenticateCustomer(Long id, String password) 
             throws CustomerLoginException, Exception;
     public Customer createCustomer(Customer customer) throws Exception;
-    public void createAccount(Account account) throws Exception;
-    public void makeDeposit(Transaction transaction) throws Exception;
-    public void makePayment(Transaction transaction) 
+    public Account createAccount(Account account) throws Exception;
+    public Transaction makeDeposit(Transaction transaction) throws Exception;
+    public Transaction makePayment(Transaction transaction) 
             throws NotEnoughFundsException, Exception;
-    public void makeTransfer(Transaction transaction, String accountToId) 
+    public Transaction makeTransfer(Transaction transaction, String accountToId) 
             throws NoAccountException, NotEnoughFundsException, Exception;
     public void deleteCustomer(Long customerId) throws Exception;
-    public void deleteAccount(String accountId) throws Exception;
+    public void deleteAccount(Long accountId) throws NoAccountException, Exception;
     public void updateCustomer(Customer custmer) throws Exception;
     public void updateAccount(Account account) throws Exception;
-    public void updateCredential(Credential credential) throws Exception;
+    public void updatePassword(Credential credential) throws Exception;
 }
