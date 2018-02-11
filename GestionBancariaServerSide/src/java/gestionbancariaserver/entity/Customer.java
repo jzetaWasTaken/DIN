@@ -97,13 +97,13 @@ public class Customer implements Serializable {
     private Date birthDate;
     
     @ManyToMany(fetch = javax.persistence.FetchType.LAZY)
-    @JoinTable(name = "CUSTOMER_ACCOUNTS",
+    @JoinTable(
+            name = "CUSTOMER_ACCOUNTS",
             schema = "BANK_MANAGEMENT_DB",
             joinColumns
             = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID"),
             inverseJoinColumns
-            = @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ACCOUNT_ID")
-    )
+            = @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ID"))
     private Collection<Account> accounts;
 
     public Long getId() {

@@ -35,27 +35,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(
         name="findTransactionsByAccount",
-        query="SELECT t FROM Transaction AS t WHERE t.account.accountId = :accountId ORDER BY t.timeStamp",
+        query="SELECT t FROM Transaction AS t WHERE t.account.id = :accountId ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findDepositsByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = gestionbancariaserver.entity.TransactionType.DEPOSIT "
-                + "AND t.account.accountId = :accountId "
+                + "AND t.account.id = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findTransfersByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = gestionbancariaserver.entity.TransactionType.TRANSFER "
-                + "AND t.account.accountId = :accountId "
+                + "AND t.account.id = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findPaymentsByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = gestionbancariaserver.entity.TransactionType.PAYMENT "
-                + "AND t.account.accountId = :accountId "
+                + "AND t.account.id = :accountId "
                 + "ORDER BY t.timeStamp",
         lockMode = LockModeType.NONE),
 })

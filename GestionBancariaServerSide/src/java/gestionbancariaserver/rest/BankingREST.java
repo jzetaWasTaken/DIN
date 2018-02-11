@@ -21,12 +21,10 @@ import gestionbancariaserver.exception.NoCustomerException;
 import gestionbancariaserver.exception.NoTransactionException;
 import gestionbancariaserver.exception.NotEnoughFundsException;
 import gestionbancariaserver.exception.TransactionException;
-import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,7 +33,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -82,7 +79,7 @@ public class BankingREST {
     @GET
     @Path("/transactions/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public Response findTransactionsByAccount(@PathParam("accountid") String accountId) {
+    public Response findTransactionsByAccount(@PathParam("accountid") Long accountId) {
         List<Transaction> transactions;
         GenericEntity entity;
         try {
@@ -104,7 +101,7 @@ public class BankingREST {
     @GET
     @Path("/deposits/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public Response findDepositsByAccount(@PathParam("accountid") String accountId) {
+    public Response findDepositsByAccount(@PathParam("accountid") Long accountId) {
         List<Transaction> transactions;
         GenericEntity entity;
         try {
@@ -126,7 +123,7 @@ public class BankingREST {
     @GET
     @Path("/payments/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public Response findPaymentsByAccount(@PathParam("accountid") String accountId) {
+    public Response findPaymentsByAccount(@PathParam("accountid") Long accountId) {
         List<Transaction> transactions;
         GenericEntity entity;
         try {
@@ -148,7 +145,7 @@ public class BankingREST {
     @GET
     @Path("/transfers/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
-    public Response findTransfersByAccount(@PathParam("accountid") String accountId) {
+    public Response findTransfersByAccount(@PathParam("accountid") Long accountId) {
         List<Transaction> transactions;
         GenericEntity entity;
         try {

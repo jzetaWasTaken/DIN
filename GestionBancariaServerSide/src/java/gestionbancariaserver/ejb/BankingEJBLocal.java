@@ -26,13 +26,13 @@ public interface BankingEJBLocal {
         
     public List<Account> findAccountsByCustomerId(Long id) 
             throws NoAccountException, Exception;
-    public List<Transaction> findTransactionsByAccount(String accountId) 
+    public List<Transaction> findTransactionsByAccount(Long accountId) 
             throws NoTransactionException, Exception;
-    public List<Transaction> findDepositsByAccount(String accountId) 
+    public List<Transaction> findDepositsByAccount(Long accountId) 
             throws NoTransactionException, Exception;
-    public List<Transaction> findPaymentsByAccount(String accountId) 
+    public List<Transaction> findPaymentsByAccount(Long accountId) 
             throws NoTransactionException, Exception;
-    public List<Transaction> findTransfersByAccount(String accountId) 
+    public List<Transaction> findTransfersByAccount(Long accountId) 
             throws NoTransactionException, Exception;
     public List<Customer> findCustomersByLogin(String login) 
             throws NoCustomerException, Exception;

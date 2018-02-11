@@ -56,7 +56,7 @@ public class Account implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(name="ACCOUNT_NUMER", unique=true)
+    @Column(name="ACCOUNT_NUMBER", unique=true)
     private String accountNumber;
     
     @Enumerated(STRING)
