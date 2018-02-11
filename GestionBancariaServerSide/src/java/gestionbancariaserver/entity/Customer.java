@@ -58,7 +58,7 @@ public class Customer implements Serializable {
     @OneToOne(cascade = javax.persistence.CascadeType.ALL,
             fetch = javax.persistence.FetchType.LAZY)
     @MapsId
-    @JoinColumn(name="id")
+    @JoinColumn(name="ID")
     private Credential credentials;
 
     @NotNull
