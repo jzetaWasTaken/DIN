@@ -6,8 +6,15 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving customer 
+ * authentication. I serves as a wrapping exception to throw from the 
+ * {@link gestionbancariaserver.rest.BankingREST} RESTFul service.
+ * <p></p>
+ * It is mapped to an HTTP response by 
+ * {@link gestionbancariaserver.exceptionmapper.CustomerUnauthorizedExceptionMapper}
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class CustomerUnauthorizedException extends RuntimeException {
 
@@ -28,6 +35,13 @@ public class CustomerUnauthorizedException extends RuntimeException {
         super(msg);
     }
     
+    /**
+     * Constructs an instance of <code>CustomerUnauthorizedException</code> with
+     * the specified detail message.
+     *
+     * @param msg   the detail message.
+     * @param cause the wrapped exception.
+     */
     public CustomerUnauthorizedException(String msg, Throwable cause) {
         super(msg, cause);
     }

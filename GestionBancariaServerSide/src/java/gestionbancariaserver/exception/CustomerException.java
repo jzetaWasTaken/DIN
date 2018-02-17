@@ -6,8 +6,16 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Customer}. I serves as a wrapping 
+ * exception to throw from the {@link gestionbancariaserver.rest.BankingREST} 
+ * RESTFul service.
+ * <p></p>
+ * It is mapped to an HTTP response by 
+ * {@link gestionbancariaserver.exceptionmapper.CustomerExceptionMapper}
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class CustomerException extends RuntimeException {
 
@@ -28,6 +36,13 @@ public class CustomerException extends RuntimeException {
         super(msg);
     }
     
+    /**
+     * Constructs an instance of <code>CustomerCreateException</code> with the
+     * specified detail message and the cause.
+     *
+     * @param msg   the detail message.
+     * @param cause the wrapped exception
+     */
     public CustomerException(String msg, Throwable cause) {
         super(msg, cause);
     }

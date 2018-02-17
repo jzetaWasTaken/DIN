@@ -27,8 +27,27 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author ubuntu
+ * Represents a customer.
+ * <ul>
+ *      <li><strong>{@link Customer#id}</strong> Unique identifier of a Customer</li> 
+ *      <li><strong>{@link Customer#credentials}</strong> Customer credentials</li> 
+ *      <li><strong>{@link Customer#lastName}</strong> Customer last name</li> 
+ *      <li><strong>{@link Customer#firstName}</strong> Customer first name</li> 
+ *      <li><strong>{@link Customer#street}</strong> Customer street</li> 
+ *      <li><strong>{@link Customer#city}</strong> Customer city</li>
+ *      <li><strong>{@link Customer#nation}</strong> Customer nation</li>
+ *      <li><strong>{@link Customer#zip}</strong> Customer local area code</li>
+ *      <li><strong>{@link Customer#phone}</strong> Customer phone number</li>
+ *      <li><strong>{@link Customer#email}</strong> Customer contact email</li>
+ *      <li><strong>{@link Customer#birthDate}</strong> Customer date of birth</li>
+ *      <li><strong>{@link Customer#accounts}</strong> Customer accounts</li>
+ * </ul>
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
+ * @see gestionbancariaserver.entity.Account
+ * @see gestionbancariaserver.entity.Credential
+ * @see gestionbancariaserver.entity.Account#customers
  */
 @Entity
 @Table(name = "CUSTOMER", schema = "BANK_MANAGEMENT_DB")
@@ -75,12 +94,12 @@ public class Customer implements Serializable {
 
     private String nation;
 
-    //TODO pattern zip
+    //TODO Better pattern zip
     @Pattern(regexp = "[0-9]{5}",
             message = "Invalid zip format")
     private String zip;
 
-    //TODO pattern phone
+    //TODO Better pattern phone
     @Pattern(regexp = "[0-9]{9}",
             message = "Invalid phone format")
     private String phone;
@@ -105,103 +124,233 @@ public class Customer implements Serializable {
             inverseJoinColumns
             = @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ID"))
     private Collection<Account> accounts;
-
+    
+    /**
+     * Retrieves customer ID.
+     * 
+     * @return  Customer ID
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Registers customer ID.
+     * 
+     * @param id 
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Retrieves customer's last name.
+     * 
+     * @return  Customer last name
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * Registers customer's last name
+     * 
+     * @param lastName  Customer last name
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    /**
+     * Retrieves customer's first name.
+     * 
+     * @return Customer first name
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * Registers customer's first name.
+     * 
+     * @param firstName Customer first name
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     * Retrieves customer's address street.
+     * 
+     * @return Customer street
+     */
     public String getStreet() {
         return street;
     }
 
+    /**
+     * Registers customer's address street.
+     * 
+     * @param street Customer street
+     */
     public void setStreet(String street) {
         this.street = street;
     }
 
+    /**
+     * Retrieves customer's city.
+     * 
+     * @return Customer city
+     */
     public String getCity() {
         return city;
     }
 
+    /**
+     * Registers customer's city.
+     * 
+     * @param city  Customer city
+     */
     public void setCity(String city) {
         this.city = city;
     }
 
+    /**
+     * Retrieves customer's nation.
+     * 
+     * @return Customer nation
+     */
     public String getNation() {
         return nation;
     }
 
+    /**
+     * Registers customer's nation.
+     * 
+     * @param nation  Customer nation
+     */
     public void setNation(String nation) {
         this.nation = nation;
     }
 
+    /**
+     * Retrieves customer's date of birth.
+     * 
+     * @return Customer date of birth
+     */
     public Date getBirthDate() {
         return birthDate;
     }
 
+    /**
+     * Registers customer's date of birth.
+     * 
+     * @param birthDate  Customer date of birth
+     */
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 
+    /**
+     * Retrieves customer's local area code.
+     * 
+     * @return Local area code
+     */
     public String getZip() {
         return zip;
     }
 
+    /**
+     * Registers customer's local area code.
+     * 
+     * @param zip  Customer local area code
+     */
     public void setZip(String zip) {
         this.zip = zip;
     }
 
+    /**
+     * Retrieves customer's phone number.
+     * 
+     * @return Customer phone number
+     */
     public String getPhone() {
         return phone;
     }
 
+    /**
+     * Registers customer's phone number.
+     * 
+     * @param phone  Customer phone number
+     */
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    /**
+     * Retrieves customer's contact email.
+     * 
+     * @return Customer contact email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Registers customer's contact email.
+     * 
+     * @param email  Customer contact email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Retrieves customer's credentials.
+     * 
+     * @return  Customer credentials
+     * @see     gestionbancariaserver.entity.Credential
+     */
     public Credential getCredentials() {
         return credentials;
     }
 
+    /**
+     * Registers customer's credentials.
+     * 
+     * @param credentials   Customer credentials
+     * @see                 gestionbancariaserver.entity.Credential
+     */
     public void setCredentials(Credential credentials) {
         this.credentials = credentials;
     }
 
+    /**
+     * Retrieves customer's accounts.
+     * 
+     * @return  Customer accounts
+     * @see     gestionbancariaserver.entity.Account 
+     */
     public Collection<Account> getAccounts() {
         return accounts;
     }
 
+    /**
+     * Registers customer's accounts.
+     * 
+     * @param accounts  Customer accounts
+     * @see             gestionbancariaserver.entity.Account
+     */
     public void setAccounts(Collection<Account> accounts) {
         this.accounts = accounts;
     }
-
+    
+    /**
+     * Retrieves objects hash code.
+     * 
+     * @return  Customer hash code
+     * @see     Object#hashCode() 
+     */
     @Override
     public int hashCode() {
         int hash = 0;
@@ -209,6 +358,13 @@ public class Customer implements Serializable {
         return hash;
     }
 
+    /**
+     * Specifies the conditions for two customers objects to be equal.
+     * 
+     * @param object    Object to compare
+     * @return          True if the objects are equal, false otherwise
+     * @see             Object#equals
+     */
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Customer)) {
@@ -221,6 +377,12 @@ public class Customer implements Serializable {
         return true;
     }
 
+    /**
+     * Specifies how customers are printed by default.
+     * 
+     * @return  The account string format
+     * @see     Object#toString() 
+     */
     @Override
     public String toString() {
         return "gestionbancariaserver.entity.Customer[ id=" + id + " ]";

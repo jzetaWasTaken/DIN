@@ -6,8 +6,12 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Account}. Thrown from 
+ * {@link gestionbancariaserver.ejb.BankingEJB} when no accounts are found.
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class NoAccountException extends Exception {
 
@@ -26,9 +30,5 @@ public class NoAccountException extends Exception {
      */
     public NoAccountException(String msg) {
         super(msg);
-    }
-    
-    public NoAccountException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

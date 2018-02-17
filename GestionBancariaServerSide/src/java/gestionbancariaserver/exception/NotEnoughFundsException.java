@@ -6,8 +6,14 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Transaction} and
+ * {@link gestionbancariaserver.entity.Transaction}. Thrown from 
+ * {@link gestionbancariaserver.ejb.BankingEJB} when an account
+ * does not have enough funds to make certain transaction.
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class NotEnoughFundsException extends Exception {
 
@@ -26,9 +32,5 @@ public class NotEnoughFundsException extends Exception {
      */
     public NotEnoughFundsException(String msg) {
         super(msg);
-    }
-    
-    public NotEnoughFundsException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

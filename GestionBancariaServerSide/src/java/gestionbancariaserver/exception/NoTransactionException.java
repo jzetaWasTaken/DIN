@@ -6,8 +6,12 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Transaction}. Thrown from 
+ * {@link gestionbancariaserver.ejb.BankingEJB} when no transactions are found.
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class NoTransactionException extends Exception {
 
@@ -26,9 +30,5 @@ public class NoTransactionException extends Exception {
      */
     public NoTransactionException(String msg) {
         super(msg);
-    }
-    
-    public NoTransactionException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

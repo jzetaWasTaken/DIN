@@ -27,8 +27,22 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author ubuntu
+ * Represents a bank transaction.
+ * <ul>
+ *      <li><strong>{@link Transaction#id}</strong> Unique identifier of an Account</li> 
+ *      <li><strong>{@link Transaction#timeStamp}</strong> Time when the transaction is made</li> 
+ *      <li><strong>{@link Transaction#amount}</strong> Transaction amount</li> 
+ *      <li><strong>{@link Transaction#balance}</strong> Account balance after the transaction</li> 
+ *      <li><strong>{@link Transaction#description}</strong> Transaction description</li> 
+ *      <li><strong>{@link Transaction#type}</strong> Transaction type {@link TransactionType}</li>
+ *      <li><strong>{@link Transaction#account}</strong> Account the transaction belongs to</li>
+ * </ul>
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
+ * @see gestionbancariaserver.entity.Account
+ * @see gestionbancariaserver.entity.TransactionType
+ * @see gestionbancariaserver.entity.Account#transactions
  */
 @Entity
 @Table(name="BANK_TRANSACTION", schema="BANK_MANAGEMENT_DB")
@@ -100,62 +114,140 @@ public class Transaction implements Serializable {
         this.account = account;
     }
     
+    /**
+     * Retrieves transaction ID.
+     * 
+     * @return  Transaction ID
+     */
     public Integer getId() {
         return id;
     }
-
+    
+    /**
+     * Registers transaction ID.
+     * 
+     * @param id Transaction ID
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     * Retrieves transaction date.
+     * 
+     * @return  Transaction date
+     */
     public Date getTimeStamp() {
         return timeStamp;
     }
 
+    /**
+     * Registers transaction date.
+     * 
+     * @param timeStamp Transaction date
+     */
     public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
 
+    /**
+     * Retrieves transaction amount.
+     * 
+     * @return  Transaction amount
+     */
     public BigDecimal getAmount() {
         return amount;
     }
 
+    /**
+     * Registers transaction amount.
+     * 
+     * @param amount Transaction amount
+     */
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
+    /**
+     * Retrieves transaction balance.
+     * 
+     * @return  Transaction balance
+     */
     public BigDecimal getBalance() {
         return balance;
     }
 
+    /**
+     * Registers transaction balance.
+     * 
+     * @param balance Transaction balance
+     */
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
+    /**
+     * Retrieves transaction description.
+     * 
+     * @return  Transaction description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Registers transaction description.
+     * 
+     * @param description Transaction description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Retrieves transaction type.
+     * 
+     * @return  Transaction type
+     * @see     gestionbancariaserver.entity.TransactionType
+     */
     public TransactionType getType() {
         return type;
     }
 
+    /**
+     * Registers transaction type.
+     * 
+     * @param type  Transaction type
+     * @see         gestionbancariaserver.entity.TransactionType
+     */
     public void setType(TransactionType type) {
         this.type = type;
     }
 
+    /**
+     * Retrieves transaction account.
+     * 
+     * @return  Transaction account
+     */
     public Account getAccount() {
         return account;
     }
 
+    /**
+     * Registers transaction account.
+     * 
+     * @param account Transaction account
+     */
     public void setAccount(Account account) {
         this.account = account;
     }
     
+    /**
+     * Retrieves objects hash code.
+     * 
+     * @return  Transaction hash code
+     * @see     Object#hashCode() 
+     */
     @Override
     public int hashCode() {
         int hash = 0;
@@ -163,6 +255,13 @@ public class Transaction implements Serializable {
         return hash;
     }
 
+    /**
+     * Specifies the conditions for two transaction objects to be equal.
+     * 
+     * @param object    Object to compare
+     * @return          True if the objects are equal, false otherwise
+     * @see             Object#equals
+     */
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Transaction)) {
@@ -175,6 +274,12 @@ public class Transaction implements Serializable {
         return true;
     }
 
+    /**
+     * Specifies how transactions are printed by default.
+     * 
+     * @return  The account string format
+     * @see     Object#toString() 
+     */
     @Override
     public String toString() {
         return "gestionbancariaserver.entity.Transaction[ id=" + id + " ]";

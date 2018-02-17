@@ -6,8 +6,13 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Customer} and
+ * {@link gestionbancariaserver.entity.Customer}. Thrown from 
+ * {@link gestionbancariaserver.ejb.BankingEJB} when the login process fails.
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class CustomerLoginException extends Exception {
 
@@ -26,9 +31,5 @@ public class CustomerLoginException extends Exception {
      */
     public CustomerLoginException(String msg) {
         super(msg);
-    }
-    
-    public CustomerLoginException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }

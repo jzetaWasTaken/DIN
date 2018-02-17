@@ -6,8 +6,12 @@
 package gestionbancariaserver.exception;
 
 /**
- *
- * @author jon
+ * Represents an application business logic exception involving 
+ * {@link gestionbancariaserver.entity.Customer}. Thrown from 
+ * {@link gestionbancariaserver.ejb.BankingEJB} when no customers are found.
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 public class NoCustomerException extends Exception {
 
@@ -26,9 +30,5 @@ public class NoCustomerException extends Exception {
      */
     public NoCustomerException(String msg) {
         super(msg);
-    }
-    
-    public NoCustomerException(String msg, Throwable cause) {
-        super(msg, cause);
     }
 }
