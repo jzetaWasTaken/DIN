@@ -29,7 +29,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 /**
- * <p>Stateless EJB that contains the business login of the application.</p>
+ * <p>Stateless EJB that contains the business logic of the application.</p>
  * <p>It implements {@link gestionbancariaserver.ejb.BankingEJBLocal} interface</p>
  * 
  * @author Jon Zaballa Zarzosa

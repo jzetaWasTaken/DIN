@@ -26,8 +26,8 @@ public class EntityDeleteExceptionMapper
      * @param exception The exception to map.
      * @return          HTTP response with GONE status and the 
      *                  exception message.
-     * @see Response
-     * @see Response.Status#GONE
+     * @see             Response
+     * @see             Response.Status#GONE
      */
     @Override
     public Response toResponse(EntityDeleteException exception) {

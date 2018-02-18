@@ -26,8 +26,8 @@ public class TransactionExceptionMapper
      * @param exception The exception to map.
      * @return          HTTP response with CONFLICT status and the 
      *                  exception message.
-     * @see Response
-     * @see Response.Status#CONFLICT
+     * @see             Response
+     * @see             Response.Status#CONFLICT
      */
     @Override
     public Response toResponse(TransactionException exception) {

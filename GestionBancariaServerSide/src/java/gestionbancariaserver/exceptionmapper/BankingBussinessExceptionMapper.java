@@ -26,8 +26,8 @@ public class BankingBussinessExceptionMapper
      * @param exception The exception to map.
      * @return          HTTP response with INTERNAL_SERVER_ERROR status and the 
      *                  exception message.
-     * @see Response
-     * @see Response.Status#INTERNAL_SERVER_ERROR
+     * @see             Response
+     * @see             Response.Status#INTERNAL_SERVER_ERROR
      */
     @Override
     public Response toResponse(BankingBussinessException exception) {

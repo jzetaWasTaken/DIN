@@ -39,21 +39,60 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 /**
- *
- * @author jon
+ * RESTful web service that provides methods and URI paths for REST Clients. 
+ * 
+ * @author Jon Zaballa Zarzosa
+ * @version 1.0, 17 Feb 2018
  */
 @Path("/banking")
 public class BankingREST {
     
+    /**
+     * Application log.
+     */
     private static final Logger LOGGER = Logger.getLogger("bankingappserverside");
+    
+    /**
+     * String constant to start the logging messages.
+     */
     private static final String LOG_HEADER = "BankingREST";
+    
+    /**
+     * String constant to send to the client when a customer is created.
+     */
     private static final String CUSTOMER_CREATED = "Customer created; id: %s";
+    
+    /**
+     * String constant to send to the client when an account is created.
+     */
     private static final String ACCOUNT_CREATED = "Account created; id: %s";
+    
+    /**
+     * String constant to send to the client when a transaction is made.
+     */
     private static final String TRANSACTION_MADE = "Transaction made; id: %s";
 
+    /**
+     * EJB injection. It enables access to business logic methods.
+     */
     @EJB
     private BankingEJBLocal ejb;
     
+    /**
+     * GET method that fetches accounts by customer. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException} when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param id    Customer ID.
+     * @return      HTTP response with {@link Response.Status#OK} status and
+     *              embedded entities.
+     * @see         AccountException
+     * @see         BankingBussinessException
+     * @see         GET
+     */
     @GET
     @Path("/accounts/{customerid}")
     @Produces(MediaType.APPLICATION_XML)
@@ -76,6 +115,21 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method that fetches transactions by account. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param accountId Customer ID.
+     * @return          HTTP response with {@link Response.Status#OK} status 
+     *                  and embedded entities.
+     * @see             TransactionException
+     * @see             BankingBussinessException
+     * @see             GET
+     */
     @GET
     @Path("/transactions/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
@@ -98,6 +152,21 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method that fetches deposits by account. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param accountId Customer ID.
+     * @return          HTTP response with {@link Response.Status#OK} status 
+     *                  and embedded entities.
+     * @see             TransactionException
+     * @see             BankingBussinessException
+     * @see             GET
+     */
     @GET
     @Path("/deposits/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
@@ -120,6 +189,21 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method that fetches payments by account. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param accountId Customer ID.
+     * @return          HTTP response with {@link Response.Status#OK} status 
+     *                  and embedded entities.
+     * @see             TransactionException
+     * @see             BankingBussinessException
+     * @see             GET
+     */
     @GET
     @Path("/payments/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
@@ -142,6 +226,21 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method that fetches transactions by account. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param accountId Customer ID.
+     * @return          HTTP response with {@link Response.Status#OK} status 
+     *                  and embedded entities.
+     * @see             TransactionException
+     * @see             BankingBussinessException
+     * @see             GET
+     */
     @GET
     @Path("/transfers/{accountid}")
     @Produces(MediaType.APPLICATION_XML)
@@ -164,6 +263,21 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method that fetches customers by login. It returns the entities
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param login Customer ID.
+     * @return      HTTP response with {@link Response.Status#OK} status 
+     *              and embedded entities.
+     * @see         TransactionException
+     * @see         BankingBussinessException
+     * @see         GET
+     */
     @GET
     @Path("/login/{login}")
     @Produces(MediaType.APPLICATION_XML)
@@ -186,6 +300,22 @@ public class BankingREST {
         return Response.ok(entity).build();
     }
     
+    /**
+     * GET method to authenticate customers. If successful, it returns the customer
+     * found embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when no entities are found or
+     * when something goes wrong on the server's logic layer. The exceptions are
+     * mapped to HTTP responses to notify the client.
+     * 
+     * @param id        Customer ID
+     * @param password  Customer password
+     * @return          HTTP response with {@link Response.Status#OK} status 
+     *                  and embedded entities.
+     * @see             BankingBussinessException
+     * @see             CustomerUnauthorizedException
+     * @see             GET
+     */
     @GET
     @Path("/login/{id}-{password}")
     @Produces(MediaType.APPLICATION_XML)
@@ -207,7 +337,20 @@ public class BankingREST {
         return Response.ok(customer).build();
     }
     
-    
+    /**
+     * POST method to create a new customer. If successful, it returns a 
+     * message with the newly created customer's ID embedded into an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the customer creation process 
+     * fails. The exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param customer  Customer to be created.
+     * @return          HTTP response with {@link Response.Status#CREATED} 
+     *                  status and embedded message with the new customer's ID.
+     * @see             BankingBussinessException
+     * @see             POST
+     */
     @POST
     @Path("/customers")
     @Consumes(MediaType.APPLICATION_XML)
@@ -226,6 +369,20 @@ public class BankingREST {
                 .build();
     }
     
+    /**
+     * POST method to create a new account. If successful, it returns a 
+     * message with the newly created account ID embedded into an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the account creation process 
+     * fails. The exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param account   Account to be created.
+     * @return          HTTP response with {@link Response.Status#CREATED} 
+     *                  status and embedded message with the new account ID.
+     * @see             BankingBussinessException
+     * @see             POST
+     */
     @POST
     @Path("/accounts")
     @Consumes(MediaType.APPLICATION_XML)
@@ -244,6 +401,20 @@ public class BankingREST {
                 .build();
     }
     
+    /**
+     * POST method to make a money deposit. If successful, it returns a message 
+     * with the deposit ID embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the deposit creation process 
+     * fails. The exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param transaction   Deposit to be made.
+     * @return              HTTP response with {@link Response.Status#CREATED} 
+     *                      status and embedded message with the new transaction
+     *                      ID.
+     * @see                 BankingBussinessException
+     * @see                 POST
+     */
     @POST
     @Path("/deposits")
     @Consumes(MediaType.APPLICATION_XML)
@@ -262,6 +433,22 @@ public class BankingREST {
                 .build();
     }
     
+    /**
+     * POST method to make a money payment. If successful, it returns a message 
+     * with the payment ID embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when when there are not enough funds 
+     * on the sender account or when something goes wrong on the server logic 
+     * layer. The exceptions are mapped to HTTP responses to notify the client.
+     * 
+     * @param transaction   Payment to be made.
+     * @return              HTTP response with {@link Response.Status#CREATED} 
+     *                      status and embedded message with the new transaction
+     *                      ID.
+     * @see                 BankingBussinessException
+     * @see                 TransactionException
+     * @see                 POST
+     */
     @POST
     @Path("/payments")
     @Consumes(MediaType.APPLICATION_XML)
@@ -286,6 +473,25 @@ public class BankingREST {
                 .build();
     }
     
+    /**
+     * POST method to make a money transfer. If successful, it returns a message 
+     * with the transfer ID embedded into an HTTP {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when the recipient account number is 
+     * not found, when there are not enough funds on the sender account or when 
+     * something goes wrong on the server logic layer. The exceptions are mapped 
+     * to HTTP responses to notify the client.
+     * 
+     * @param transaction   Transfer to be made.
+     * @param accountNumber Recipient account number
+     * @return              HTTP response with {@link Response.Status#CREATED} 
+     *                      status and embedded message with the new transaction
+     *                      ID.
+     * @see                 AccountException
+     * @see                 BankingBussinessException
+     * @see                 TransactionException
+     * @see                 POST
+     */
     @POST
     @Path("/transfers/{accountto}")
     @Consumes(MediaType.APPLICATION_XML)
@@ -296,7 +502,7 @@ public class BankingREST {
         } catch (NoAccountException e) {
             LOGGER.log(
                     Level.INFO,
-                    LOG_HEADER + ": No accounts found; accountNumber: {0}",
+                    LOG_HEADER + ": Recipient account not found; accountNumber: {0}",
                     accountNumber);
             throw new AccountException(e.getMessage(), e);
         } catch (NotEnoughFundsException e) {
@@ -316,6 +522,21 @@ public class BankingREST {
                 .build();
     }
     
+    /**
+     * DELETE method to delete a customer. If successful, it returns an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when the entity no longer exists or 
+     * when an error occurs on the server logic layer. The exceptions are mapped 
+     * to HTTP responses to notify the client.
+     * 
+     * @param customerId    ID of the customer to delete.  
+     * @return              HTTP response with {@link Response.Status#NO_CONTENT} 
+     *                      status.
+     * @see                 EntityDeleteException
+     * @see                 BankingBussinessException
+     * @see                 DELETE
+     */
     @DELETE
     @Path("/customers/delete/{customerid}")
     public Response deleteCustomer(@PathParam("customerid")Long customerId) {
@@ -334,6 +555,21 @@ public class BankingREST {
         return Response.status(Status.NO_CONTENT).build();
     }
     
+    /**
+     * DELETE method to delete an account. If successful, it returns an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws {@link RuntimeException}s when the entity no longer exists or 
+     * when an error occurs on the server logic layer. The exceptions are mapped 
+     * to HTTP responses to notify the client.
+     * 
+     * @param accountId ID of the account to delete.
+     * @return          HTTP response with {@link Response.Status#NO_CONTENT} 
+     *                  status.
+     * @see             EntityDeleteException
+     * @see             BankingBussinessException
+     * @see             DELETE
+     */
     @DELETE
     @Path("/accounts/delete/{accountid}")
     public Response deleteAccount(@PathParam("accountid")Long accountId) {
@@ -352,6 +588,19 @@ public class BankingREST {
         return Response.status(Status.NO_CONTENT).build();
     }
     
+    /**
+     * PUT method to update a customer. If successful, it returns an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the update process fails. The 
+     * exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param customer  Customer to update.
+     * @return          HTTP response with {@link Response.Status#NO_CONTENT} 
+     *                  status.
+     * @see             BankingBussinessException
+     * @see             PUT
+     */
     @PUT
     @Path("/customers/update")
     @Consumes(MediaType.APPLICATION_XML)
@@ -365,6 +614,19 @@ public class BankingREST {
         return Response.status(Status.NO_CONTENT).build();
     }
     
+    /**
+     * PUT method to update an account. If successful, it returns an HTTP 
+     * {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the update process fails. The 
+     * exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param account   Account to update.
+     * @return          HTTP response with {@link Response.Status#NO_CONTENT} 
+     *                  status.
+     * @see             BankingBussinessException
+     * @see             PUT
+     */
     @PUT
     @Path("/accounts/update")
     @Consumes(MediaType.APPLICATION_XML)
@@ -378,6 +640,19 @@ public class BankingREST {
         return Response.status(Status.NO_CONTENT).build();
     }
     
+    /**
+     * PUT method to update a customer password. If successful, it returns an 
+     * HTTP {@link Response}. 
+     * <p></p>
+     * It throws a {@link RuntimeException} when the update process fails. The 
+     * exception is mapped to an HTTP response to notify the client.
+     * 
+     * @param credential    Customer credentials to update.
+     * @return              HTTP response with {@link Response.Status#NO_CONTENT} 
+     *                      status.
+     * @see                 BankingBussinessException
+     * @see                 PUT
+     */
     @PUT
     @Path("/credentials/update")
     @Consumes(MediaType.APPLICATION_XML)

@@ -27,8 +27,8 @@ public class CustomerUnauthorizedExceptionMapper
      * @param exception The exception to map.
      * @return          HTTP response with UNAUTHORIZED status and the 
      *                  exception message.
-     * @see Response
-     * @see Response.Status#UNAUTHORIZED
+     * @see             Response
+     * @see             Response.Status#UNAUTHORIZED
      */
     @Override
     public Response toResponse(CustomerUnauthorizedException exception) {

@@ -26,8 +26,8 @@ public class CredentialExceptionMapper
      * @param exception The exception to map.
      * @return          HTTP response with NOT_FOUND status and the 
      *                  exception message.
-     * @see Response
-     * @see Response.Status#NOT_FOUND
+     * @see             Response
+     * @see             Response.Status#NOT_FOUND
      */
     @Override
     public Response toResponse(CredentialException exception) {
