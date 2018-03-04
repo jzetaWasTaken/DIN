@@ -80,11 +80,11 @@ public class Customer implements Serializable {
     @JoinColumn(name="ID")
     private Credential credentials;
 
-    @NotNull
+    
     @Column(name = "LAST_NAME")
     private String lastName;
 
-    @NotNull
+    
     @Column(name = "FIRST_NAME")
     private String firstName;
 
@@ -95,23 +95,17 @@ public class Customer implements Serializable {
     private String nation;
 
     //TODO Better pattern zip
-    @Pattern(regexp = "[0-9]{5}",
-            message = "Invalid zip format")
+    
     private String zip;
 
     //TODO Better pattern phone
-    @Pattern(regexp = "[0-9]{9}",
-            message = "Invalid phone format")
+    
     private String phone;
 
-    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`"
-            + "{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z"
-            + "0-9-]*[a-z0-9])?",
-            message = "Invalid email format")
+    
     private String email;
 
     @Temporal(javax.persistence.TemporalType.DATE)
-    @Past
     @Column(name = "BIRTH_DATE")
     private Date birthDate;
     
@@ -148,6 +142,7 @@ public class Customer implements Serializable {
      * 
      * @return  Customer last name
      */
+    @NotNull
     public String getLastName() {
         return lastName;
     }
@@ -166,6 +161,7 @@ public class Customer implements Serializable {
      * 
      * @return Customer first name
      */
+    @NotNull
     public String getFirstName() {
         return firstName;
     }
@@ -238,6 +234,7 @@ public class Customer implements Serializable {
      * 
      * @return Customer date of birth
      */
+    @Past
     public Date getBirthDate() {
         return birthDate;
     }
@@ -256,6 +253,7 @@ public class Customer implements Serializable {
      * 
      * @return Local area code
      */
+    @Pattern(regexp = "[0-9]{5}", message = "Invalid zip format")
     public String getZip() {
         return zip;
     }
@@ -274,6 +272,7 @@ public class Customer implements Serializable {
      * 
      * @return Customer phone number
      */
+    @Pattern(regexp = "[0-9]{9}", message = "Invalid phone format")
     public String getPhone() {
         return phone;
     }
@@ -292,6 +291,12 @@ public class Customer implements Serializable {
      * 
      * @return Customer contact email
      */
+    @Pattern(
+            regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`"
+            + "{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z"
+            + "0-9-]*[a-z0-9])?",
+            message = "Invalid email format"
+    )
     public String getEmail() {
         return email;
     }

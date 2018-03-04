@@ -3,17 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestionbancariaserver.entity;
+package gestion_bancaria.ui.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,29 +26,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see gestionbancariaserver.entity.Customer
  * @see gestionbancariaserver.entity.Customer#credentials
  */
-@Entity
-@Table(name="CREDENTIAL", schema="BANK_MANAGEMENT_DB")
 @XmlRootElement(name="credential")
-public class Credential implements Serializable {
+public class CredentialBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    
     private Long id;
-    
-    //@NotNull
     private String login;
-    
-    //@NotNull
     private String password;
-            
-    @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastModifiedOn;
-    
-    @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastSignedIn;
-    
-    @Temporal(javax.persistence.TemporalType.DATE)
     private Date createdOn;
 
     /**
@@ -89,6 +70,7 @@ public class Credential implements Serializable {
      * 
      * @param login Customer login to sign in
      */
+    @XmlElement(name="login")
     public void setLogin(String login) {
         this.login = login;
     }
@@ -107,6 +89,7 @@ public class Credential implements Serializable {
      * 
      * @param password  Customer password
      */
+    @XmlElement(name="password")
     public void setPassword(String password) {
         this.password = password;
     }
@@ -125,6 +108,7 @@ public class Credential implements Serializable {
      * 
      * @param lastModifiedOn    Date of last modification
      */
+    @XmlElement(name="lastModifiedOn")
     public void setLastModifiedOn(Date lastModifiedOn) {
         this.lastModifiedOn = lastModifiedOn;
     }
@@ -143,6 +127,7 @@ public class Credential implements Serializable {
      * 
      * @param lastSignedIn  Date of the last access
      */
+    @XmlElement(name="lastSignedIn")
     public void setLastSignedIn(Date lastSignedIn) {
         this.lastSignedIn = lastSignedIn;
     }
@@ -161,6 +146,7 @@ public class Credential implements Serializable {
      * 
      * @param createdOn Date of customer creation
      */
+    @XmlElement(name="createdOn")
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
@@ -187,10 +173,10 @@ public class Credential implements Serializable {
      */
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Credential)) {
+        if (!(object instanceof CredentialBean)) {
             return false;
         }
-        Credential other = (Credential) object;
+        CredentialBean other = (CredentialBean) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
