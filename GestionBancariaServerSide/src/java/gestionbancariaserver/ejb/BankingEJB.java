@@ -54,7 +54,7 @@ public class BankingEJB implements BankingEJBLocal {
     /**
      * Entity manager injection to handle ORM methods
      */
-    @PersistenceContext(unitName = "GestionBancariaServerSidePU")
+    @PersistenceContext
     private EntityManager em;
 
     /**

@@ -42,10 +42,10 @@ public class Credential implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    //@NotNull
+    @NotNull
     private String login;
     
-    //@NotNull
+    @NotNull
     private String password;
             
     @Temporal(javax.persistence.TemporalType.DATE)
