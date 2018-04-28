@@ -7,6 +7,9 @@ package bank.management.ui.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,12 +34,15 @@ public class CredentialBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    private Long id;
-    private String login;
-    private String password;
-    private Date lastModifiedOn;
-    private Date lastSignedIn;
-    private Date createdOn;
+    private final SimpleLongProperty id;
+    private final SimpleStringProperty login;
+    private final SimpleStringProperty password;
+    
+    public CredentialBean() {
+        this.id = new SimpleLongProperty();
+        this.login = new SimpleStringProperty();
+        this.password = new SimpleStringProperty();
+    }
 
     /**
      * Retrieves the ID.
@@ -44,7 +50,7 @@ public class CredentialBean implements Serializable {
      * @return Credential ID
      */
     public Long getId() {
-        return id;
+        return this.id.get();
     }
     
     /**
@@ -53,7 +59,7 @@ public class CredentialBean implements Serializable {
      * @param id    Credential ID
      */
     public void setId(Long id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -62,7 +68,7 @@ public class CredentialBean implements Serializable {
      * @return login
      */
     public String getLogin() {
-        return login;
+        return this.login.get();
     }
 
     /**
@@ -72,7 +78,7 @@ public class CredentialBean implements Serializable {
      */
     @XmlElement(name="login")
     public void setLogin(String login) {
-        this.login = login;
+        this.login.set(login);
     }
 
     /**
@@ -81,7 +87,7 @@ public class CredentialBean implements Serializable {
      * @return Customer password
      */
     public String getPassword() {
-        return password;
+        return this.password.get();
     }
 
     /**
@@ -91,64 +97,7 @@ public class CredentialBean implements Serializable {
      */
     @XmlElement(name="password")
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * Retrieves the date of the last modification to customer credentials.
-     * 
-     * @return Last modification date
-     */
-    public Date getLastModifiedOn() {
-        return lastModifiedOn;
-    }
-
-    /**
-     * Registers the last time the Customer credentials were modified.
-     * 
-     * @param lastModifiedOn    Date of last modification
-     */
-    @XmlElement(name="lastModifiedOn")
-    public void setLastModifiedOn(Date lastModifiedOn) {
-        this.lastModifiedOn = lastModifiedOn;
-    }
-
-    /**
-     * Retrieves the date of the last time the user signed in.
-     * 
-     * @return Date of the last access
-     */
-    public Date getLastSignedIn() {
-        return lastSignedIn;
-    }
-    
-    /**
-     * Registers the last date the customer accessed the application.
-     * 
-     * @param lastSignedIn  Date of the last access
-     */
-    @XmlElement(name="lastSignedIn")
-    public void setLastSignedIn(Date lastSignedIn) {
-        this.lastSignedIn = lastSignedIn;
-    }
-
-    /**
-     * Retrieves the date when the customer was created.
-     * 
-     * @return  Date of customer creation
-     */
-    public Date getCreatedOn() {
-        return createdOn;
-    }
-
-    /**
-     * Registers the date the user was created
-     * 
-     * @param createdOn Date of customer creation
-     */
-    @XmlElement(name="createdOn")
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
+        this.password.set(password);
     }
 
     /**

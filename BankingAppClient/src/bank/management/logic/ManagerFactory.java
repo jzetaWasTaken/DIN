@@ -7,8 +7,10 @@ package bank.management.logic;
 
 /**
  *
- * @author ubuntu
+ * @author jon
  */
-public class ManagerTestDataGenerator implements Manager {
-    
+public class ManagerFactory {
+    public static Manager getManager() {
+        return new ManagerImplementation();
+    }
 }

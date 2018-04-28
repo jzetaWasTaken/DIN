@@ -23,38 +23,47 @@ public class MainTest {
     private static BankingRESTClient webClient = new BankingRESTClient();
     
     public static void main(String[] args) {
-        
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Loop" + (i+1));
-            CredentialBean credential = new CredentialBean();
-            credential.setLogin("customer"+i);
-            credential.setPassword("customer"+i);
-            credential.setLastModifiedOn(new Date());
-            credential.setLastSignedIn(new Date());
-            
-            CustomerBean customer = new CustomerBean();
-            customer.setCredentials(credential);
-            customer.setCity("City"+1);
-            customer.setEmail("customer"+i+"@test.org");
-            customer.setFirstName("Customer #"+i);
-            customer.setBirthDate(new Date());
-            customer.setLastName("Lastname"+i);
-            customer.setNation("Nation"+i);
-            customer.setPhone("66655500"+i);
-            customer.setStreet("Elm Street "+i);
-            customer.setZip("0000"+i);
-            
-            
-            System.out.println("Creating customer");
-            webClient.createCustomer(customer);
-
-        }
-        
         try {
-            webClient.findAccountsByCustomer(new GenericType<List<AccountBean>>() {}, "1");
+            List<CustomerBean> customers = webClient.findCustomerByLogin(new GenericType<List<CustomerBean>>() {}, "customer0");
+            if (customers != null)
+                customers.forEach((customer) -> System.out.println(customer.getFirstName() + " " + customer.getLastName()));
         } catch (NotFoundException e) {
-            System.out.print("Not found exception");
+            System.out.println("Not found");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        
+        
+        
+//        for (int i = 0; i < 10; i++) {
+//            System.out.println("Loop" + (i+1));
+//            CredentialBean credential = new CredentialBean();
+//            credential.setLogin("customer"+i);
+//            credential.setPassword("customer"+i);
+//            
+//            CustomerBean customer = new CustomerBean();
+//            customer.setCredentials(credential);
+//            customer.setCity("City"+1);
+//            customer.setEmail("customer"+i+"@test.org");
+//            customer.setFirstName("Customer #"+i);
+//            customer.setBirthDate(new Date());
+//            customer.setLastName("Lastname"+i);
+//            customer.setNation("Nation"+i);
+//            customer.setPhone("66655500"+i);
+//            customer.setStreet("Elm Street "+i);
+//            customer.setZip("0000"+i);
+//            
+//            
+//            System.out.println("Creating customer");
+//            webClient.createCustomer(customer);
+//
+//        }
+        
+//        try {
+//            webClient.findAccountsByCustomer(new GenericType<List<AccountBean>>() {}, "1");
+//        } catch (NotFoundException e) {
+//            System.out.print("Not found exception");
+//        }
         
         System.exit(0);
     }

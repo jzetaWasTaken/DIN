@@ -6,8 +6,12 @@
 package bank.management.ui.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -16,18 +20,33 @@ public class CustomerBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    private Long id;
-    private CredentialBean credentials;
-    private String lastName;
-    private String firstName;
-    private String street;
-    private String city;
-    private String nation;
-    private String zip;
-    private String phone;
-    private String email;
-    private Date birthDate;
+    private final SimpleLongProperty id;
+    private final SimpleObjectProperty<CredentialBean> credentials;
+    private final SimpleStringProperty lastName;
+    private final SimpleStringProperty firstName;
+    private final SimpleStringProperty street;
+    private final SimpleStringProperty city;
+    private final SimpleStringProperty nation;
+    private final SimpleStringProperty zip;
+    private final SimpleStringProperty phone;
+    private final SimpleStringProperty email;
+    private final SimpleObjectProperty<Date> birthDate;
     private Collection<AccountBean> accounts;
+    
+    public CustomerBean() {
+        this.id = new SimpleLongProperty();
+        this.credentials = new SimpleObjectProperty<>();
+        this.lastName = new SimpleStringProperty();
+        this.firstName = new SimpleStringProperty();
+        this.street = new SimpleStringProperty();
+        this.city = new SimpleStringProperty();
+        this.nation = new SimpleStringProperty();
+        this.zip = new SimpleStringProperty();
+        this.phone = new SimpleStringProperty();
+        this.email = new SimpleStringProperty();
+        this.birthDate = new SimpleObjectProperty<>();
+        this.accounts = new ArrayList<>();
+    }
     
     /**
      * Retrieves customer ID.
@@ -35,7 +54,7 @@ public class CustomerBean implements Serializable {
      * @return  Customer ID
      */
     public Long getId() {
-        return id;
+        return this.id.get();
     }
 
     /**
@@ -44,7 +63,7 @@ public class CustomerBean implements Serializable {
      * @param id 
      */
     public void setId(Long id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -53,7 +72,7 @@ public class CustomerBean implements Serializable {
      * @return  Customer last name
      */
     public String getLastName() {
-        return lastName;
+        return this.lastName.get();
     }
 
     /**
@@ -63,7 +82,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="lastName")
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName.set(lastName);
     }
 
     /**
@@ -72,7 +91,7 @@ public class CustomerBean implements Serializable {
      * @return Customer first name
      */
     public String getFirstName() {
-        return firstName;
+        return this.firstName.get();
     }
 
     /**
@@ -82,7 +101,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="firstName")
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName.set(firstName);
     }
 
     /**
@@ -91,7 +110,7 @@ public class CustomerBean implements Serializable {
      * @return Customer street
      */
     public String getStreet() {
-        return street;
+        return this.street.get();
     }
 
     /**
@@ -101,7 +120,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="street")
     public void setStreet(String street) {
-        this.street = street;
+        this.street.set(street);
     }
 
     /**
@@ -110,7 +129,7 @@ public class CustomerBean implements Serializable {
      * @return Customer city
      */
     public String getCity() {
-        return city;
+        return this.city.get();
     }
 
     /**
@@ -120,7 +139,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="city")
     public void setCity(String city) {
-        this.city = city;
+        this.city.set(city);
     }
 
     /**
@@ -129,7 +148,7 @@ public class CustomerBean implements Serializable {
      * @return Customer nation
      */
     public String getNation() {
-        return nation;
+        return this.nation.get();
     }
 
     /**
@@ -139,7 +158,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="nation")
     public void setNation(String nation) {
-        this.nation = nation;
+        this.nation.set(nation);
     }
 
     /**
@@ -148,7 +167,7 @@ public class CustomerBean implements Serializable {
      * @return Customer date of birth
      */
     public Date getBirthDate() {
-        return birthDate;
+        return this.birthDate.get();
     }
 
     /**
@@ -158,7 +177,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="birthDate")
     public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+        this.birthDate.set(birthDate);
     }
 
     /**
@@ -167,7 +186,7 @@ public class CustomerBean implements Serializable {
      * @return Local area code
      */
     public String getZip() {
-        return zip;
+        return this.zip.get();
     }
 
     /**
@@ -177,7 +196,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="zip")
     public void setZip(String zip) {
-        this.zip = zip;
+        this.zip.set(zip);
     }
 
     /**
@@ -186,7 +205,7 @@ public class CustomerBean implements Serializable {
      * @return Customer phone number
      */
     public String getPhone() {
-        return phone;
+        return this.phone.get();
     }
 
     /**
@@ -196,7 +215,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="phone")
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone.set(phone);
     }
 
     /**
@@ -205,7 +224,7 @@ public class CustomerBean implements Serializable {
      * @return Customer contact email
      */
     public String getEmail() {
-        return email;
+        return this.email.get();
     }
 
     /**
@@ -215,7 +234,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="email")
     public void setEmail(String email) {
-        this.email = email;
+        this.email.set(email);
     }
 
     /**
@@ -225,7 +244,7 @@ public class CustomerBean implements Serializable {
      * @see     gestionbancariaserver.entity.Credential
      */
     public CredentialBean getCredentials() {
-        return credentials;
+        return this.credentials.get();
     }
 
     /**
@@ -236,7 +255,7 @@ public class CustomerBean implements Serializable {
      */
     @XmlElement(name="credentials")
     public void setCredentials(CredentialBean credentials) {
-        this.credentials = credentials;
+        this.credentials.set(credentials);
     }
 
     /**
