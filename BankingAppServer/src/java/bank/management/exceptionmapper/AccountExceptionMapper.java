@@ -8,6 +8,7 @@ package bank.management.exceptionmapper;
 import bank.management.exception.AccountException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Represents an {@link bank.management.exception.AccountException}to an 
@@ -16,6 +17,7 @@ import javax.ws.rs.ext.ExceptionMapper;
  * @author Jon Zaballa Zarzosa
  * @version 1.0, 17 Feb 2018
  */
+@Provider
 public class AccountExceptionMapper 
         implements ExceptionMapper<AccountException> {
 

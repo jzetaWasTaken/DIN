@@ -29,6 +29,13 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(bank.management.exceptionmapper.AccountExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.BankingBussinessExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.CredentialExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.CustomerExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.CustomerUnauthorizedExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.EntityDeleteExceptionMapper.class);
+        resources.add(bank.management.exceptionmapper.TransactionExceptionMapper.class);
         resources.add(bank.management.rest.BankingREST.class);
     }
     

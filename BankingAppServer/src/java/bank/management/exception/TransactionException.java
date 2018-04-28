@@ -5,6 +5,8 @@
  */
 package bank.management.exception;
 
+import javax.ejb.ApplicationException;
+
 /**
  * Represents an application business logic exception involving 
  * {@link gestionbancariaserver.entity.Transaction}. I serves as a wrapping 

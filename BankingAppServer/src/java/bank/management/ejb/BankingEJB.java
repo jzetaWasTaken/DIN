@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -38,6 +40,7 @@ import javax.transaction.Transactional;
  * @see Stateless
  */
 @Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 @Transactional(rollbackOn = SQLException.class)
 public class BankingEJB implements BankingEJBLocal {
@@ -55,7 +58,7 @@ public class BankingEJB implements BankingEJBLocal {
     /**
      * Entity manager injection to handle ORM methods
      */
-    @PersistenceContext(unitName = "GestionBancariaServerSidePU")
+    @PersistenceContext(unitName = "BankingAppServerPU")
     private EntityManager em;
 
     /**
@@ -65,14 +68,13 @@ public class BankingEJB implements BankingEJBLocal {
      * @return      List of accounts
      * @throws NoAccountException
      *              If no accounts are found.
-     * @throws Exception
-     *              If anything goes wrong.
+     * @throws SQLException
      * @see         bank.management.entity.Account
      * @see         bank.management.entity.Customer
      */
     @Override
     public List<Account> findAccountsByCustomerId(Long id) 
-            throws Exception {
+            throws NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching accounts by customer");
         System.out.println(em == null?"EM is null":"EM is not null");
         List<Account> accounts = em.createNamedQuery("findAccountsByCustomerId")
@@ -93,14 +95,13 @@ public class BankingEJB implements BankingEJBLocal {
      * @return          List of Transactions
      * @throws NoTransactionException
      *                  If no transactions are found
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Account
      * @see             bank.management.entity.Transaction
      */
     @Override
     public List<Transaction> findTransactionsByAccount(Long accountId) 
-            throws Exception {
+            throws NoTransactionException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching transactions by account");
         List<Transaction> transactions = 
                 em.createNamedQuery("findTransactionsByAccount")
@@ -121,15 +122,14 @@ public class BankingEJB implements BankingEJBLocal {
      * @return          List of deposits
      * @throws NoTransactionException
      *                  If no deposits are found
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Account
      * @see             bank.management.entity.Transaction
      * @see             gestionbancariaserver.entity.TransactionType#DEPOSIT
      */
     @Override
     public List<Transaction> findDepositsByAccount(Long accountId) 
-            throws Exception {
+            throws NoTransactionException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching deposits by account");
         List<Transaction> deposits = 
                 em.createNamedQuery("findDepositsByAccount")
@@ -150,15 +150,14 @@ public class BankingEJB implements BankingEJBLocal {
      * @return          List of payments
      * @throws NoTransactionException
      *                  If no payments are found
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Account
      * @see             bank.management.entity.Transaction
      * @see             gestionbancariaserver.entity.TransactionType#PAYMENT
      */
     @Override
     public List<Transaction> findPaymentsByAccount(Long accountId)
-            throws Exception {
+            throws NoTransactionException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching payments by account");
         List<Transaction> payments = 
                 em.createNamedQuery("findPaymentsByAccount")
@@ -179,15 +178,14 @@ public class BankingEJB implements BankingEJBLocal {
      * @return          List of transfers
      * @throws NoTransactionException
      *                  If no transfers are found
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Account
      * @see             bank.management.entity.Transaction
      * @see             gestionbancariaserver.entity.TransactionType#TRANSFER
      */
     @Override
     public List<Transaction> findTransfersByAccount(Long accountId) 
-            throws Exception {
+            throws NoTransactionException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching transfers by account");
         List<Transaction> transfers = 
                 em.createNamedQuery("findTransfersByAccount")
@@ -208,8 +206,7 @@ public class BankingEJB implements BankingEJBLocal {
      * @return      List of customers
      * @throws NoCustomerException
      *              If no customers are found
-     * @throws Exception 
-     *              If anything goes wrong
+     * @throws java.sql.SQLException
      * @see         bank.management.entity.Customer
      * @see         gestionbancariaserver.entity.Customer#credentials
      * @see         bank.management.entity.Credential
@@ -217,7 +214,7 @@ public class BankingEJB implements BankingEJBLocal {
      */
     @Override
     public List<Customer> findCustomersByLogin(String login) 
-            throws Exception {
+            throws NoCustomerException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching customers by login");
         List<Customer> customers = em.createNamedQuery("findCustomersByLogin")
                     .setParameter("login", login)
@@ -238,8 +235,7 @@ public class BankingEJB implements BankingEJBLocal {
      * @return          Customer that is signing in
      * @throws CustomerLoginException
      *                  If the password is not valid
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Customer
      * @see             gestionbancariaserver.entity.Customer#credentials
      * @see             bank.management.entity.Credential
@@ -247,7 +243,7 @@ public class BankingEJB implements BankingEJBLocal {
      */
     @Override
     public Customer authenticateCustomer(Long id, String password) 
-            throws Exception {
+            throws CustomerLoginException, SQLException {
         LOGGER.info(LOG_HEADER + ": Authenticating user");
         List<Customer> customers = 
                 em.createNamedQuery("findCustomerByIdPassword")
@@ -267,17 +263,14 @@ public class BankingEJB implements BankingEJBLocal {
      * 
      * @param customer  The customer to be created
      * @return          Created customer
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Customer
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Customer createCustomer(Customer customer) throws Exception {
+    public Customer createCustomer(Customer customer) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Creating customer");
         customer.getCredentials().setCreatedOn(new Date());
-        System.out.println(customer == null? "Null":"Still not null");
-        System.out.println(em == null?"EM is null":"EM is not null");
         em.persist(customer);
         em.flush();
         em.refresh(customer);
@@ -290,13 +283,12 @@ public class BankingEJB implements BankingEJBLocal {
      * 
      * @param account   Account to be created
      * @return          Created account
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see             bank.management.entity.Account
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Account createAccount(Account account) throws Exception {
+    public Account createAccount(Account account) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Creating account");
         account.setBeginBalanceDate(new Date());
         em.persist(account);
@@ -311,15 +303,14 @@ public class BankingEJB implements BankingEJBLocal {
      * 
      * @param transaction   The deposit to be made
      * @return              Made deposit
-     * @throws Exception 
-     *                      If anything goes wrong
+     * @throws java.sql.SQLException
      * @see                 bank.management.entity.Transaction
      * @see                 gestionbancariaserver.entity.Transaction#account
      * @see                 gestionbancariaserver.entity.TransactionType#DEPOSIT
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Transaction makeDeposit(Transaction transaction) throws Exception {
+    public Transaction makeDeposit(Transaction transaction) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Making money deposit");
         Account account = transaction.getAccount();
         BigDecimal newBalance = 
@@ -344,8 +335,7 @@ public class BankingEJB implements BankingEJBLocal {
      * @return              Made payment
      * @throws NotEnoughFundsException
      *                      If the account does not have enough funds
-     * @throws Exception 
-     *                      If anything goes wrong
+     * @throws java.sql.SQLException
      * @see                 bank.management.entity.Transaction
      * @see                 gestionbancariaserver.entity.Transaction#account
      * @see                 gestionbancariaserver.entity.TransactionType#PAYMENT
@@ -353,7 +343,7 @@ public class BankingEJB implements BankingEJBLocal {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Transaction makePayment(Transaction transaction) 
-            throws Exception {
+            throws NotEnoughFundsException, SQLException {
         LOGGER.info(LOG_HEADER + ": Making money payment");
         Account account = transaction.getAccount();
         BigDecimal newBalance = 
@@ -382,8 +372,7 @@ public class BankingEJB implements BankingEJBLocal {
      *                          If the recipient account is not found
      * @throws NotEnoughFundsException
      *                          If the sender account does not have enough funds
-     * @throws Exception 
-     *                          If anything goes wrong
+     * @throws java.sql.SQLException
      * @see                 bank.management.entity.Transaction
      * @see                 gestionbancariaserver.entity.Transaction#account
      * @see                 gestionbancariaserver.entity.TransactionType#TRANSFER
@@ -391,7 +380,7 @@ public class BankingEJB implements BankingEJBLocal {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Transaction makeTransfer(Transaction transaction, String accountToNumber) 
-            throws Exception {
+            throws NotEnoughFundsException, NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Making money transfer");
         Account accountTo =  findAccountByNumber(accountToNumber);
         Account accountFrom = transaction.getAccount();
@@ -430,14 +419,13 @@ public class BankingEJB implements BankingEJBLocal {
      * @param customerId    The ID of the customer to delete
      * @throws NoCustomerException
      *                      If there is no customer matching the ID
-     * @throws Exception 
-     *                      If anything goes wrong
+     * @throws java.sql.SQLException
      * @see bank.management.entity.Customer
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void deleteCustomer(Long customerId) 
-            throws Exception {
+            throws NoCustomerException, SQLException {
         LOGGER.info(LOG_HEADER + ": Deleting customer");
         em.remove(findCustomerById(customerId));
         LOGGER.info(LOG_HEADER + "Customer deleted");
@@ -449,14 +437,13 @@ public class BankingEJB implements BankingEJBLocal {
      * @param accountId     The ID of the account to delete
      * @throws NoAccountException
      *                      If there is no account matching the ID
-     * @throws Exception 
-     *                      If anything goes wrong
+     * @throws java.sql.SQLException
      * @see bank.management.entity.Account
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void deleteAccount(Long accountId) 
-            throws Exception {
+            throws NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Deleting account");
         em.remove(findAccountById(accountId));
         LOGGER.info(LOG_HEADER + ": Account deleted");
@@ -466,15 +453,14 @@ public class BankingEJB implements BankingEJBLocal {
      * Updates customer's fields.
      * 
      * @param customer  Customer to update
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see bank.management.entity.Customer
      * @see gestionbancariaserver.entity.Customer#credentials
      * @see bank.management.entity.Credential
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void updateCustomer(Customer customer) throws Exception {
+    public void updateCustomer(Customer customer) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Updating customer");
         em.merge(customer);
         LOGGER.info(LOG_HEADER + ": Customer updated");
@@ -484,13 +470,12 @@ public class BankingEJB implements BankingEJBLocal {
      * Updates account fields.
      * 
      * @param account   Account to update
-     * @throws Exception 
-     *                  If anything goes wrong
+     * @throws java.sql.SQLException
      * @see bank.management.entity.Account
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void updateAccount(Account account) throws Exception {
+    public void updateAccount(Account account) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Updating account");
         em.merge(account);
         LOGGER.info(LOG_HEADER + ": Account updated");
@@ -500,47 +485,27 @@ public class BankingEJB implements BankingEJBLocal {
      * Updates customer password.
      * 
      * @param credential    Customer credentials
-     * @throws Exception    
-     *                      If anything goes wrong
+     * @throws java.sql.SQLException
      * @see bank.management.entity.Credential
      * @see gestionbancariaserver.entity.Credential#password
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void updatePassword(Credential credential) throws Exception {
+    public void updatePassword(Credential credential) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Updating credentials");
         credential.setLastModifiedOn(new Date());
         em.merge(credential);
         LOGGER.info(LOG_HEADER + ": Credentials updated");
     }
     
-    /**
-     * Update customer's last access.
-     * 
-     * @param customer  Customer accessing the system
-     * @throws Exception 
-     *                  If anything goes wrong
-     * @see bank.management.entity.Customer
-     * @see gestionbancariaserver.entity.Customer#credentials
-     * @see gestionbancariaserver.entity.Credential#lastSignedIn
-     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    private void updateLastAccess(Customer customer) throws Exception {
+    private void updateLastAccess(Customer customer) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Updating customer last access date");
         customer.getCredentials().setLastSignedIn(new Date());
         em.merge(customer);
         LOGGER.info(LOG_HEADER + ": Last access updated");
     }
     
-    /**
-     * Checks if there are enough funds in the account balance.
-     * 
-     * @param account   Account to check
-     * @throws NotEnoughFundsException 
-     *                  If there are not enough funds
-     * @see gestionbancariaserver.entity.Account#balance
-     * @see gestionbancariaserver.entity.Account#creditLine
-     */
     private void checkBalance(Account account) throws NotEnoughFundsException {
         LOGGER.info(LOG_HEADER + ": Checking account balance");
         BigDecimal balance;
@@ -554,17 +519,8 @@ public class BankingEJB implements BankingEJBLocal {
         }
     }
     
-    /**
-     * Fetches an account given the account number.
-     * 
-     * @param accountNumber Account number
-     * @return              Account matching the number
-     * @throws NoAccountException 
-     *                      If no account matches the given number
-     * @see bank.management.entity.Account
-     * @see gestionbancariaserver.entity.Account#accountNumber
-     */
-    private Account findAccountByNumber(String accountNumber) throws NoAccountException {
+    private Account findAccountByNumber(String accountNumber) 
+            throws NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching account by ID");
         List<Account> accounts = em.createNamedQuery("findAccountByNumber")
             .setParameter("accountNumber", accountNumber)
@@ -574,18 +530,9 @@ public class BankingEJB implements BankingEJBLocal {
         LOGGER.info(LOG_HEADER + ": Account found");
         return accounts.get(0);
     }
-    
-    /**
-     * Fetches customers given an ID.
-     * 
-     * @param id    Customer ID
-     * @return      Customer matching the ID
-     * @throws NoCustomerException 
-     *              If no customer matches the ID
-     * @see bank.management.entity.Customer
-     * @see gestionbancariaserver.entity.Customer#id
-     */
-    private Customer findCustomerById(Long id) throws NoCustomerException {
+
+    private Customer findCustomerById(Long id) 
+            throws NoCustomerException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching customer by ID");
         List<Customer> customers = em.createNamedQuery("findCustomerById")
                 .setParameter("id", id)
@@ -595,18 +542,9 @@ public class BankingEJB implements BankingEJBLocal {
         LOGGER.info(LOG_HEADER + ": Customer found");
         return customers.get(0);
     }
-    
-    /**
-     * Fetches accounts given an ID
-     * 
-     * @param accountId Account ID
-     * @return          Account matching the ID
-     * @throws NoAccountException 
-     *                  If no account matches the ID
-     * @see bank.management.entity.Account
-     * @see gestionbancariaserver.entity.Account#id
-     */
-    private Object findAccountById(Long accountId) throws NoAccountException {
+
+    private Object findAccountById(Long accountId) 
+            throws NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Fetching account by ID");
         List<Account> accounts = em.createNamedQuery("findAccountById")
             .setParameter("accountId", accountId)

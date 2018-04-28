@@ -7,13 +7,13 @@ package bank.management.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -48,12 +48,15 @@ public class Credential implements Serializable {
     //@NotNull
     private String password;
             
+    @Column(name="LAST_MODIFIED_ON")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastModifiedOn;
     
+    @Column(name="LAST_SIGNED_IN")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date lastSignedIn;
     
+    @Column(name="CREATED_ON")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date createdOn;
 

@@ -8,6 +8,7 @@ package bank.management.exceptionmapper;
 import bank.management.exception.CustomerUnauthorizedException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Represents a 
@@ -17,6 +18,7 @@ import javax.ws.rs.ext.ExceptionMapper;
  * @author Jon Zaballa Zarzosa
  * @version 1.0, 17 Feb 2018
  */
+@Provider
 public class CustomerUnauthorizedExceptionMapper
         implements ExceptionMapper<CustomerUnauthorizedException>{
 

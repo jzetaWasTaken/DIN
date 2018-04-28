@@ -9,6 +9,12 @@ import bank.management.entity.Account;
 import bank.management.entity.Credential;
 import bank.management.entity.Customer;
 import bank.management.entity.Transaction;
+import bank.management.exception.CustomerLoginException;
+import bank.management.exception.NoAccountException;
+import bank.management.exception.NoCustomerException;
+import bank.management.exception.NoTransactionException;
+import bank.management.exception.NotEnoughFundsException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -24,29 +30,31 @@ import javax.ejb.Local;
 public interface BankingEJBLocal {
         
     public List<Account> findAccountsByCustomerId(Long id) 
-            throws Exception;
+            throws NoAccountException, SQLException;
     public List<Transaction> findTransactionsByAccount(Long accountId) 
-            throws Exception;
+            throws NoTransactionException, SQLException;
     public List<Transaction> findDepositsByAccount(Long accountId) 
-            throws Exception;
+            throws NoTransactionException, SQLException;
     public List<Transaction> findPaymentsByAccount(Long accountId) 
-            throws Exception;
+            throws NoTransactionException, SQLException;
     public List<Transaction> findTransfersByAccount(Long accountId) 
-            throws Exception;
+            throws NoTransactionException, SQLException;
     public List<Customer> findCustomersByLogin(String login) 
-            throws Exception;
+            throws NoCustomerException, SQLException;
     public Customer authenticateCustomer(Long id, String password) 
-            throws Exception;
-    public Customer createCustomer(Customer customer) throws Exception;
-    public Account createAccount(Account account) throws Exception;
-    public Transaction makeDeposit(Transaction transaction) throws Exception;
+            throws CustomerLoginException, SQLException;
+    public Customer createCustomer(Customer customer) throws SQLException;
+    public Account createAccount(Account account) throws SQLException;
+    public Transaction makeDeposit(Transaction transaction) throws SQLException;
     public Transaction makePayment(Transaction transaction) 
-            throws Exception;
+            throws NotEnoughFundsException, SQLException;
     public Transaction makeTransfer(Transaction transaction, String accountToId) 
-            throws Exception;
-    public void deleteCustomer(Long customerId) throws Exception;
-    public void deleteAccount(Long accountId) throws Exception;
-    public void updateCustomer(Customer custmer) throws Exception;
-    public void updateAccount(Account account) throws Exception;
-    public void updatePassword(Credential credential) throws Exception;
+            throws NotEnoughFundsException, NoAccountException, SQLException;
+    public void deleteCustomer(Long customerId) 
+            throws NoCustomerException, SQLException;
+    public void deleteAccount(Long accountId) 
+            throws NoAccountException, SQLException;
+    public void updateCustomer(Customer custmer) throws SQLException;
+    public void updateAccount(Account account) throws SQLException;
+    public void updatePassword(Credential credential) throws SQLException;
 }

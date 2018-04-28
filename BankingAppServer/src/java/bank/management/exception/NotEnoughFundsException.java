@@ -5,6 +5,8 @@
  */
 package bank.management.exception;
 
+import javax.ejb.ApplicationException;
+
 /**
  * Represents an application business logic exception involving 
  * {@link gestionbancariaserver.entity.Transaction} and
@@ -15,6 +17,7 @@ package bank.management.exception;
  * @author Jon Zaballa Zarzosa
  * @version 1.0, 17 Feb 2018
  */
+@ApplicationException(rollback = true)
 public class NotEnoughFundsException extends Exception {
 
     /**
