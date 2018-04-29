@@ -7,8 +7,9 @@ package bank.management.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import static javax.persistence.EnumType.STRING;
@@ -77,7 +78,7 @@ public class Account implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(name="ACCOUNT_NUMBER", unique=true)
+    @Column(name="ACCOUNT_NUMBER", unique = true)
     private String accountNumber;
     
     @Enumerated(STRING)
@@ -100,12 +101,13 @@ public class Account implements Serializable {
     private Date beginBalanceDate;
     
     @ManyToMany(mappedBy = "accounts")
-    private Collection<Customer> customers;
+    private List<Customer> customers;
     
-    @OneToMany(mappedBy = "account",
-            fetch = javax.persistence.FetchType.LAZY,
-            cascade = javax.persistence.CascadeType.REMOVE)
-    private Collection<Transaction> transactions;
+    @OneToMany(
+            mappedBy = "account",
+            fetch = javax.persistence.FetchType.LAZY
+    )
+    private List<Transaction> transactions;
 
     /**
      * Retrieves the account ID.
@@ -259,7 +261,7 @@ public class Account implements Serializable {
      * @return  Account customers
      * @see     bank.management.entity.Customer
      */
-    public Collection<Customer> getCustomers() {
+    public List<Customer> getCustomers() {
         return customers;
     }
 
@@ -269,7 +271,7 @@ public class Account implements Serializable {
      * @param customers Account owners
      * @see             bank.management.entity.Customer
      */
-    public void setCustomers(Collection<Customer> customers) {
+    public void setCustomers(List<Customer> customers) {
         this.customers = customers;
     }
     
@@ -279,7 +281,7 @@ public class Account implements Serializable {
      * @return  Account transactions
      * @see     bank.management.entity.Transaction
      */
-    public Collection<Transaction> getTransactions() {
+    public List<Transaction> getTransactions() {
         return transactions;
     }
 
@@ -289,7 +291,7 @@ public class Account implements Serializable {
      * @param transactions  Account transactions
      * @see                 bank.management.entity.Transaction
      */
-    public void setTransactions(Collection<Transaction> transactions) {
+    public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
     

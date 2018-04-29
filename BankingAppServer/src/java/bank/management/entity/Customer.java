@@ -6,8 +6,9 @@
 package bank.management.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -117,7 +118,7 @@ public class Customer implements Serializable {
             = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "ID"),
             inverseJoinColumns
             = @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ID"))
-    private Collection<Account> accounts;
+    private List<Account> accounts;
     
     /**
      * Retrieves customer ID.
@@ -336,7 +337,7 @@ public class Customer implements Serializable {
      * @return  Customer accounts
      * @see     bank.management.entity.Account 
      */
-    public Collection<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
@@ -346,7 +347,7 @@ public class Customer implements Serializable {
      * @param accounts  Customer accounts
      * @see             bank.management.entity.Account
      */
-    public void setAccounts(Collection<Account> accounts) {
+    public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
     

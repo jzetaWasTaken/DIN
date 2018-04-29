@@ -18,6 +18,7 @@ import bank.management.exception.NoTransactionException;
 import bank.management.exception.NotEnoughFundsException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 
 /**
  * <p>Stateless EJB that contains the business logic of the application.</p>
@@ -291,9 +293,19 @@ public class BankingEJB implements BankingEJBLocal {
     public Account createAccount(Account account) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Creating account");
         account.setBeginBalanceDate(new Date());
-        em.persist(account);
+//        try {
+//            em.persist(account);
+//        } catch (ConstraintViolationException e) {
+//            LOGGER.log(Level.SEVERE,"Exception: ");
+//            e.getConstraintViolations().forEach(err->LOGGER.log(Level.SEVERE,err.toString()));
+//        }
+        List<Customer> customers = account.getCustomers();
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(account);
+        customers.forEach(customer->customer.setAccounts(accounts));
+        customers.forEach(customer->em.merge(customer));
         em.flush();
-        em.refresh(account);
+        //customers.forEach(customer->em.refresh(customer));
         LOGGER.info(LOG_HEADER + ": Account created");
         return account;
     }

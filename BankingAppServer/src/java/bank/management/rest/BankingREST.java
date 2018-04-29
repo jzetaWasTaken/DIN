@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -387,7 +388,7 @@ public class BankingREST {
     @Path("/accounts")
     @Consumes(MediaType.APPLICATION_XML)
     public Response createAccount(Account account) {
-        Account newAccount;
+        Account newAccount = null;
         try {
             newAccount = ejb.createAccount(account);
         } catch (Exception e) {
