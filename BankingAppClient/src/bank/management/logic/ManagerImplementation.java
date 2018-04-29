@@ -11,7 +11,7 @@ import bank.management.rest.BankingRESTClient;
 import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
 import bank.management.ui.model.TransactionBean;
-import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -31,13 +31,13 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<AccountBean> getCustomerAccounts(String customerId) 
+    public List<AccountBean> getCustomerAccounts(String customerId) 
             throws ManagerException {
         LOG.info("Getting customer accounts from REST");
-        Collection<AccountBean> accounts = null;
+        List<AccountBean> accounts = null;
         try {
             accounts =restClient.findAccountsByCustomer(
-                    new GenericType<Collection<AccountBean>>() {}, 
+                    new GenericType<List<AccountBean>>() {}, 
                     customerId
             );
         } catch (BankServerException e) {
@@ -54,14 +54,14 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<CustomerBean> getCustomer(String login) 
+    public List<CustomerBean> getCustomer(String login) 
             throws ManagerException {
         LOG.info("Getting customers from REST");
         // TODO validate customer login
-        Collection<CustomerBean> customers = null;
+        List<CustomerBean> customers = null;
         try {
             customers =restClient.findCustomerByLogin(
-                    new GenericType<Collection<CustomerBean>>() {}, 
+                    new GenericType<List<CustomerBean>>() {}, 
                     login
             );
         } catch (BankServerException e) {
@@ -78,13 +78,13 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<TransactionBean> getAccountTransactions(String accountId) 
+    public List<TransactionBean> getAccountTransactions(String accountId) 
             throws ManagerException {
         LOG.info("Getting transactions from REST");
-        Collection<TransactionBean> transactions = null;
+        List<TransactionBean> transactions = null;
         try {
             transactions =restClient.findTransactionsByAccount(
-                    new GenericType<Collection<TransactionBean>>() {}, 
+                    new GenericType<List<TransactionBean>>() {}, 
                     accountId
             );
         } catch (BankServerException e) {
@@ -101,13 +101,13 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<TransactionBean> getAccountTransfers(String accountId) 
+    public List<TransactionBean> getAccountTransfers(String accountId) 
             throws ManagerException {
         LOG.info("Getting transfers from REST");
-        Collection<TransactionBean> transfers = null;
+        List<TransactionBean> transfers = null;
         try {
             transfers =restClient.findTransfersByAccount(
-                    new GenericType<Collection<TransactionBean>>() {}, 
+                    new GenericType<List<TransactionBean>>() {}, 
                     accountId
             );
         } catch (BankServerException e) {
@@ -124,13 +124,13 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<TransactionBean> getAccountPayments(String accountId) 
+    public List<TransactionBean> getAccountPayments(String accountId) 
             throws ManagerException {
         LOG.info("Getting payments from REST");
-        Collection<TransactionBean> payments = null;
+        List<TransactionBean> payments = null;
         try {
             payments =restClient.findPaymentsByAccount(
-                    new GenericType<Collection<TransactionBean>>() {}, 
+                    new GenericType<List<TransactionBean>>() {}, 
                     accountId
             );
         } catch (BankServerException e) {
@@ -147,13 +147,13 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public Collection<TransactionBean> getAccountDeposits(String accountId)
+    public List<TransactionBean> getAccountDeposits(String accountId)
             throws ManagerException {
         LOG.info("Getting deposits from REST");
-        Collection<TransactionBean> deposits = null;
+        List<TransactionBean> deposits = null;
         try {
             deposits =restClient.findDepositsByAccount(
-                    new GenericType<Collection<TransactionBean>>() {}, 
+                    new GenericType<List<TransactionBean>>() {}, 
                     accountId
             );
         } catch (BankServerException e) {
@@ -194,7 +194,7 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public void createCustomer(CustomerBean customer) throws ManagerException {
+    public String createCustomer(CustomerBean customer) throws ManagerException {
         LOG.info("Creating customer");
         String response = null;
         try {
@@ -205,10 +205,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info(response);
+        return response;
     }
 
     @Override
-    public void createAccount(AccountBean account) throws ManagerException {
+    public String createAccount(AccountBean account) throws ManagerException {
         LOG.info("Creating account");
         String response = null;
         try {
@@ -219,6 +220,7 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info(response);
+        return response;
     }
 
     @Override
@@ -292,7 +294,7 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public void deleteCustomer(String customerId) throws ManagerException {
+    public boolean deleteCustomer(String customerId) throws ManagerException {
         LOG.info("Deleting customer");
         try {
             restClient.deleteCustomer(customerId);
@@ -302,10 +304,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info("Customer deleted");
+        return true;
     }
 
     @Override
-    public void deleteAccount(String accountId) throws ManagerException {
+    public boolean deleteAccount(String accountId) throws ManagerException {
         LOG.info("Deleting account");
         try {
             restClient.deleteAccount(accountId);
@@ -315,5 +318,6 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info("Account deleted");
+        return true;
     }
 }

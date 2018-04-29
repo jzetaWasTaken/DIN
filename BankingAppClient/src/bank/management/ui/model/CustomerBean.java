@@ -7,8 +7,8 @@ package bank.management.ui.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,7 +31,7 @@ public class CustomerBean implements Serializable {
     private final SimpleStringProperty phone;
     private final SimpleStringProperty email;
     private final SimpleObjectProperty<Date> birthDate;
-    private Collection<AccountBean> accounts;
+    private List<AccountBean> accounts;
     
     public CustomerBean() {
         this.id = new SimpleLongProperty();
@@ -264,7 +264,7 @@ public class CustomerBean implements Serializable {
      * @return  Customer accounts
      * @see     gestionbancariaserver.entity.Account 
      */
-    public Collection<AccountBean> getAccounts() {
+    public List<AccountBean> getAccounts() {
         return accounts;
     }
 
@@ -275,7 +275,7 @@ public class CustomerBean implements Serializable {
      * @see             gestionbancariaserver.entity.Account
      */
     @XmlElement(name="accounts")
-    public void setAccounts(Collection<AccountBean> accounts) {
+    public void setAccounts(List<AccountBean> accounts) {
         this.accounts = accounts;
     }
     
@@ -305,7 +305,7 @@ public class CustomerBean implements Serializable {
             return false;
         }
         CustomerBean other = (CustomerBean) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
             return false;
         }
         return true;
@@ -319,6 +319,6 @@ public class CustomerBean implements Serializable {
      */
     @Override
     public String toString() {
-        return "gestionbancariaserver.entity.Customer[ id=" + id + " ]";
+        return "bank.management.ui.model.CustomerBean[id=" + this.getId() + " ]";
     }
 }

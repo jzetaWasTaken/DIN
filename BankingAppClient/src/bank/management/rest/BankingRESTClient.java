@@ -132,18 +132,18 @@ public class BankingRESTClient {
         updateEntity("customers/update", requestEntity);
     }
 
-    public void deleteCustomer(String customerId) 
+    public boolean deleteCustomer(String customerId) 
             throws BankServerException, ClientErrorException {
         Map<String, Object> map = new HashMap<>();
         map.put("customerid", customerId);
-        deleteEntity("customers/delete/{customerid}", map);
+        return deleteEntity("customers/delete/{customerid}", map);
     }
 
-    public void deleteAccount(String accountId) 
+    public boolean deleteAccount(String accountId) 
             throws BankServerException, ClientErrorException {
         Map<String, Object> map = new HashMap<>();
         map.put("accountid", accountId);
-        deleteEntity("accounts/delete/{accountid}", map);
+        return deleteEntity("accounts/delete/{accountid}", map);
     }
 
     public void close() {
@@ -179,7 +179,7 @@ public class BankingRESTClient {
         String entity = null;
         try {
             if (response.getStatus() == Status.CREATED.getStatusCode()) 
-                response.readEntity(String.class);
+                entity = response.readEntity(String.class);
             else
                 throw new BankServerException(response.readEntity(String.class));
         } finally {
@@ -198,7 +198,7 @@ public class BankingRESTClient {
         String entity = null;
         try {
             if (response.getStatus() == Status.CREATED.getStatusCode()) 
-                response.readEntity(String.class);
+                entity = response.readEntity(String.class);
             else
                 throw new BankServerException(response.readEntity(String.class));
         } finally {
@@ -220,7 +220,7 @@ public class BankingRESTClient {
         }
     }
     
-    private void deleteEntity(String path, Map<String, Object> map) 
+    private boolean deleteEntity(String path, Map<String, Object> map) 
             throws BankServerException {
         Response response = webTarget.path(path)
                 .resolveTemplates(map)
@@ -232,5 +232,6 @@ public class BankingRESTClient {
         } finally {
             response.close();
         }
+        return true;
     }
 }

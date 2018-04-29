@@ -9,7 +9,7 @@ import bank.management.exception.ManagerException;
 import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
 import bank.management.ui.model.TransactionBean;
-import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -17,23 +17,23 @@ import java.util.Collection;
  */
 public interface Manager {
     
-    public Collection<AccountBean> getCustomerAccounts(String customerId) throws ManagerException;
+    public List<AccountBean> getCustomerAccounts(String customerId) throws ManagerException;
     
-    public Collection<CustomerBean> getCustomer(String login) throws ManagerException;
+    public List<CustomerBean> getCustomer(String login) throws ManagerException;
     
-    public Collection<TransactionBean> getAccountTransactions(String accountId) throws ManagerException;
+    public List<TransactionBean> getAccountTransactions(String accountId) throws ManagerException;
     
-    public Collection<TransactionBean> getAccountTransfers(String accountId) throws ManagerException;
+    public List<TransactionBean> getAccountTransfers(String accountId) throws ManagerException;
     
-    public Collection<TransactionBean> getAccountPayments(String accountId) throws ManagerException;
+    public List<TransactionBean> getAccountPayments(String accountId) throws ManagerException;
     
-    public Collection<TransactionBean> getAccountDeposits(String accountId) throws ManagerException;
+    public List<TransactionBean> getAccountDeposits(String accountId) throws ManagerException;
     
     public CustomerBean authenticate(String id, String password) throws ManagerException;
     
-    public void createCustomer(CustomerBean customer) throws ManagerException;
+    public String createCustomer(CustomerBean customer) throws ManagerException;
     
-    public void createAccount(AccountBean account) throws ManagerException;
+    public String createAccount(AccountBean account) throws ManagerException;
     
     public void makeDeposit(TransactionBean deposit) throws ManagerException;
     
@@ -45,7 +45,7 @@ public interface Manager {
     
     public void updateCustomer(CustomerBean customer) throws ManagerException;
     
-    public void deleteCustomer(String customerId) throws ManagerException;
+    public boolean deleteCustomer(String customerId) throws ManagerException;
     
-    public void deleteAccount(String accountId) throws ManagerException;
+    public boolean deleteAccount(String accountId) throws ManagerException;
 }

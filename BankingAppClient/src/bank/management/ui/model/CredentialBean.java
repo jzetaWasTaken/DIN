@@ -126,7 +126,7 @@ public class CredentialBean implements Serializable {
             return false;
         }
         CredentialBean other = (CredentialBean) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.getId().equals(other.getId()))) {
             return false;
         }
         return true;
@@ -140,6 +140,6 @@ public class CredentialBean implements Serializable {
      */
     @Override
     public String toString() {
-        return "gestionbancariaserver.entity.Credential[ id=" + id + " ]";
+        return "bank.management.ui.model.CredentialBean[ id=" + this.getId() + " ]";
     }
 }
