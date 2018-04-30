@@ -12,6 +12,7 @@ import bank.management.entity.Transaction;
 import bank.management.entity.Customer;
 import bank.management.exception.AccountException;
 import bank.management.exception.BankingBussinessException;
+import bank.management.exception.BankingDbException;
 import bank.management.exception.CustomerException;
 import bank.management.exception.CustomerLoginException;
 import bank.management.exception.CustomerUnauthorizedException;
@@ -21,11 +22,11 @@ import bank.management.exception.NoCustomerException;
 import bank.management.exception.NoTransactionException;
 import bank.management.exception.NotEnoughFundsException;
 import bank.management.exception.TransactionException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -294,10 +295,16 @@ public class BankingREST {
                     LOG_HEADER + ": No customers found; login: {0}",
                     login);
             throw new CustomerException(e.getMessage(), e);
+        } catch (SQLException e) {
+            LOGGER.severe(LOG_HEADER + ": Database error");
+            System.out.println("SQL error");
+            throw new BankingDbException(e.getMessage(), e.getCause());
         } catch (Exception e) {
             LOGGER.severe(LOG_HEADER + ": Exception fetching customers by login");
+            System.out.println("General error");
             throw new BankingBussinessException(e.getMessage(), e.getCause());
         }
+        LOGGER.info(LOG_HEADER + ": all good!");
         return Response.ok(entity).build();
     }
     

@@ -293,19 +293,9 @@ public class BankingEJB implements BankingEJBLocal {
     public Account createAccount(Account account) throws SQLException {
         LOGGER.info(LOG_HEADER + ": Creating account");
         account.setBeginBalanceDate(new Date());
-//        try {
-//            em.persist(account);
-//        } catch (ConstraintViolationException e) {
-//            LOGGER.log(Level.SEVERE,"Exception: ");
-//            e.getConstraintViolations().forEach(err->LOGGER.log(Level.SEVERE,err.toString()));
-//        }
-        List<Customer> customers = account.getCustomers();
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(account);
-        customers.forEach(customer->customer.setAccounts(accounts));
-        customers.forEach(customer->em.merge(customer));
+        em.persist(account);
         em.flush();
-        //customers.forEach(customer->em.refresh(customer));
+        em.refresh(account);
         LOGGER.info(LOG_HEADER + ": Account created");
         return account;
     }
@@ -439,7 +429,9 @@ public class BankingEJB implements BankingEJBLocal {
     public void deleteCustomer(Long customerId) 
             throws NoCustomerException, SQLException {
         LOGGER.info(LOG_HEADER + ": Deleting customer");
-        em.remove(findCustomerById(customerId));
+        Customer customer = findCustomerById(customerId);
+        em.remove(customer);
+        em.flush();
         LOGGER.info(LOG_HEADER + "Customer deleted");
     }
 
@@ -458,6 +450,7 @@ public class BankingEJB implements BankingEJBLocal {
             throws NoAccountException, SQLException {
         LOGGER.info(LOG_HEADER + ": Deleting account");
         em.remove(findAccountById(accountId));
+        em.flush();
         LOGGER.info(LOG_HEADER + ": Account deleted");
     }
     

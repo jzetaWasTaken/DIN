@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import static javax.persistence.EnumType.STRING;
@@ -27,6 +26,7 @@ import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Represents a banking account.
@@ -261,6 +261,7 @@ public class Account implements Serializable {
      * @return  Account customers
      * @see     bank.management.entity.Customer
      */
+    @XmlTransient
     public List<Customer> getCustomers() {
         return customers;
     }
@@ -281,6 +282,7 @@ public class Account implements Serializable {
      * @return  Account transactions
      * @see     bank.management.entity.Transaction
      */
+    @XmlTransient
     public List<Transaction> getTransactions() {
         return transactions;
     }
