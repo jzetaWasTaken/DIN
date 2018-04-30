@@ -7,15 +7,16 @@ package bank.management.ui.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author jon
  */
+@XmlRootElement(name="transaction")
 public class TransactionBean {
     
     private final SimpleIntegerProperty id;

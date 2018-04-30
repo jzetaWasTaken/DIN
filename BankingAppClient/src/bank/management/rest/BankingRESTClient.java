@@ -44,7 +44,7 @@ public class BankingRESTClient {
             throws BankServerException, ClientErrorException {
         Map<String, Object> map = new HashMap<>();
         map.put("customerid", customerId);
-        return findEntity("accounts/{curtomerid}", map, responseType);
+        return findEntity("accounts/{customerid}", map, responseType);
     }
     
     public <T> T findCustomerByLogin(GenericType<T> responseType, String login) 
@@ -163,7 +163,7 @@ public class BankingRESTClient {
             if (response.getStatus() == Status.OK.getStatusCode()) 
                 entity = response.readEntity(responseType);
             else
-                throw new BankServerException(response.readEntity(String.class));
+                throw new BankServerException(response.getStatusInfo().toString());
         } finally {
             response.close();
         }

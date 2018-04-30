@@ -224,7 +224,7 @@ public class ManagerImplementation implements Manager {
     }
 
     @Override
-    public void makeDeposit(TransactionBean deposit) throws ManagerException {
+    public String makeDeposit(TransactionBean deposit) throws ManagerException {
         LOG.info("Making deposit");
         String response = null;
         try {
@@ -235,10 +235,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info(response);
+        return response;
     }
 
     @Override
-    public void makePayment(TransactionBean payment) throws ManagerException {
+    public String makePayment(TransactionBean payment) throws ManagerException {
         LOG.info("Making payment");
         String response = null;
         try {
@@ -249,10 +250,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info(response);
+        return response;
     }
 
     @Override
-    public void makeTransfer(TransactionBean transfer, String accountTo)
+    public String makeTransfer(TransactionBean transfer, String accountTo)
             throws ManagerException {
         LOG.info("Making transfer");
         String response = null;
@@ -265,10 +267,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info(response);
+        return response;
     }
 
     @Override
-    public void updateAccount(AccountBean account) throws ManagerException {
+    public boolean updateAccount(AccountBean account) throws ManagerException {
         LOG.info("Updating account");
         try {
             restClient.updateAccount(account);
@@ -278,10 +281,11 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info("Account updated");
+        return true;
     }
 
     @Override
-    public void updateCustomer(CustomerBean customer) throws ManagerException {
+    public boolean updateCustomer(CustomerBean customer) throws ManagerException {
         LOG.info("Updating customer");
         try {
             restClient.updateCustomer(customer);
@@ -291,6 +295,7 @@ public class ManagerImplementation implements Manager {
             throw new ManagerException(e.getMessage());
         }
         LOG.info("Customer updated");
+        return true;
     }
 
     @Override

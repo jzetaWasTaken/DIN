@@ -35,15 +35,15 @@ public interface Manager {
     
     public String createAccount(AccountBean account) throws ManagerException;
     
-    public void makeDeposit(TransactionBean deposit) throws ManagerException;
+    public String makeDeposit(TransactionBean deposit) throws ManagerException;
     
-    public void makePayment(TransactionBean payment) throws ManagerException;
+    public String makePayment(TransactionBean payment) throws ManagerException;
     
-    public void makeTransfer(TransactionBean transfer, String accountTo) throws ManagerException;
+    public String makeTransfer(TransactionBean transfer, String accountTo) throws ManagerException;
     
-    public void updateAccount(AccountBean account) throws ManagerException;
+    public boolean updateAccount(AccountBean account) throws ManagerException;
     
-    public void updateCustomer(CustomerBean customer) throws ManagerException;
+    public boolean updateCustomer(CustomerBean customer) throws ManagerException;
     
     public boolean deleteCustomer(String customerId) throws ManagerException;
     

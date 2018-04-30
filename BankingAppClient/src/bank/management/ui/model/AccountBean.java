@@ -15,6 +15,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Represents a banking account.
@@ -55,8 +56,8 @@ public class AccountBean implements Serializable {
     private final SimpleObjectProperty<BigDecimal> creditLine;
     private final SimpleObjectProperty<BigDecimal> beginBalance;
     private final SimpleObjectProperty<Date> beginBalanceDate;
-    private List<CustomerBean> customers;
-    private List<TransactionBean> transactions;
+    private final SimpleObjectProperty<List<CustomerBean>> customers;
+    private final SimpleObjectProperty<List<TransactionBean>> transactions;
 
     public AccountBean() {
         this.id = new SimpleLongProperty();
@@ -67,8 +68,8 @@ public class AccountBean implements Serializable {
         this.creditLine = new SimpleObjectProperty<>();
         this.beginBalance = new SimpleObjectProperty<>();
         this.beginBalanceDate = new SimpleObjectProperty<>();
-        this.transactions = new ArrayList<>();
-        this.customers = new ArrayList<>();
+        this.transactions = new SimpleObjectProperty<>();
+        this.customers = new SimpleObjectProperty<>();
     }
     
     /**
@@ -76,7 +77,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account number
      */
-    @XmlElement(name="id")
     public Long getId() {
         return this.id.get();
     }
@@ -95,7 +95,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account number
      */
-    @XmlElement(name="accountNumber")
     public String getAccountNumber() {
         return this.accountNumber.get();
     }
@@ -134,7 +133,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account description
      */
-    @XmlElement(name="description")
     public String getDescription() {
         return this.description.get();
     }
@@ -153,7 +151,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account balance
      */
-    @XmlElement(name="balance")
     public BigDecimal getBalance() {
         return this.balance.get();
     }
@@ -172,7 +169,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account credit line
      */
-    @XmlElement(name="creditLine")
     public BigDecimal getCreditLine() {
         return creditLine.get();
     }
@@ -191,7 +187,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account begin balance
      */
-    @XmlElement(name="beginBalance")
     public BigDecimal getBeginBalance() {
         return this.beginBalance.get();
     }
@@ -210,7 +205,6 @@ public class AccountBean implements Serializable {
      * 
      * @return  Account begin balance date
      */
-    @XmlElement(name="beginBalanceDate")
     public Date getBeginBalanceDate() {
         return this.beginBalanceDate.get();
     }
@@ -230,9 +224,9 @@ public class AccountBean implements Serializable {
      * @return  Account customers
      * @see     gestionbancariaserver.entity.Customer
      */
-    @XmlElement(name="customers")
+    @XmlTransient
     public List<CustomerBean> getCustomers() {
-        return this.customers;
+        return this.customers.get();
     }
 
     /**
@@ -242,7 +236,7 @@ public class AccountBean implements Serializable {
      * @see             gestionbancariaserver.entity.Customer
      */
     public void setCustomers(List<CustomerBean> customers) {
-        this.customers = customers;
+        this.customers.set(customers);
     }
     
     /**
@@ -251,8 +245,9 @@ public class AccountBean implements Serializable {
      * @return  Account transactions
      * @see     gestionbancariaserver.entity.Transaction
      */
+    @XmlTransient
     public List<TransactionBean> getTransactions() {
-        return transactions;
+        return this.transactions.get();
     }
 
     /**
@@ -262,7 +257,7 @@ public class AccountBean implements Serializable {
      * @see                 gestionbancariaserver.entity.Transaction
      */
     public void setTransactions(List<TransactionBean> transactions) {
-        this.transactions = transactions;
+        this.transactions.set(transactions);
     }
     
     /**
@@ -291,10 +286,10 @@ public class AccountBean implements Serializable {
             return false;
         }
         AccountBean other = (AccountBean) object;
-        if ((this.getAccountNumber() == null && 
-                other.getAccountNumber() != null) || 
-                (this.getAccountNumber() != null && 
-                !this.getAccountNumber().equals(other.getAccountNumber()))) {
+        if ((this.getId() == null && 
+                other.getId() != null) || 
+                (this.getId() != null && 
+                !this.getId().equals(other.getId()))) {
             return false;
         }
         return true;
@@ -308,7 +303,7 @@ public class AccountBean implements Serializable {
      */
     @Override
     public String toString() {
-        return "bank.management.ui.model.AccountBean[ id=" + this.getAccountNumber() + " ]";
+        return "bank.management.ui.model.AccountBean[ id=" + this.getId() + " ]";
     }
     
 }
