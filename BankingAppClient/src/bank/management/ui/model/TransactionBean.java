@@ -143,7 +143,20 @@ public class TransactionBean {
 
     public StringProperty getFormattedDate() {
         return new SimpleStringProperty(
-                new SimpleDateFormat("yyy-mm-dd").format(this.getTimeStamp())
+                new SimpleDateFormat("yyyy-MM-dd").format(this.getTimeStamp())
         );
+    }
+
+    public StringProperty getSignedAmount() {
+        BigDecimal amount = this.getAmount();
+        if (this.getType().equals(TransactionType.DEPOSIT))
+            return new SimpleStringProperty(String.format("%s €", amount.toString()));
+        else
+            return new SimpleStringProperty(String.format("%s €", amount.negate().toString()));
+    }
+    
+    public StringProperty getFormattedBalance() {
+        BigDecimal balance = this.getBalance();
+        return new SimpleStringProperty(String.format("%s €", balance.toString()));
     }
 }

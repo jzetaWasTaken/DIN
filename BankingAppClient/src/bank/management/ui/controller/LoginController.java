@@ -6,25 +6,18 @@
 package bank.management.ui.controller;
 
 import bank.management.exception.ManagerException;
-import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -100,9 +93,7 @@ public class LoginController extends GenericController {
         try {
             CustomerBean customer = manager.getCustomer(tfUserId.getText()).get(0);
             customer = manager.authenticate(customer.getId().toString(), tfPassw.getText());
-            List<AccountBean> accounts = manager.getCustomerAccounts(customer.getId().toString());
             session.put("activeUser", customer);
-            session.put("customerAccounts", accounts);
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/bank/management/ui/view/main_window.fxml")
             );

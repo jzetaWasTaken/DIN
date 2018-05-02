@@ -17,11 +17,11 @@ import javafx.stage.Stage;
  * common methods and references for objects used by UI controllers
  * @author javi
  */
-public class GenericController {
+public abstract class GenericController {
     /**
      * Logger object used to log messages for application.
      */
-    protected static final Logger LOGGER=Logger.getLogger("javafxapplicationud3example.ui.controller");
+    protected static final Logger LOGGER=Logger.getLogger("bank.management.ui.controller");
     /**
      * Maximum text fields length.
      */

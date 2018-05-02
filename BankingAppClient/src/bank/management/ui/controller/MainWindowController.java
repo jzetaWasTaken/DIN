@@ -1,8 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package bank.management.ui.controller;
 
 import bank.management.exception.ManagerException;
@@ -10,28 +10,36 @@ import static bank.management.ui.controller.GenericController.LOGGER;
 import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
 import bank.management.ui.model.TransactionBean;
+import bank.management.ui.model.TransactionType;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
@@ -44,14 +52,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import javax.swing.event.ChangeEvent;
 
 /**
  * FXML Controller class
@@ -59,7 +68,33 @@ import javax.swing.event.ChangeEvent;
  * @author jon
  */
 public class MainWindowController extends GenericController {
-
+    
+    @FXML
+    private MenuItem mbiSignOut;
+    @FXML
+    private MenuItem mbiClose;
+    @FXML
+    private MenuItem mbiHelp;
+    @FXML
+    private MenuItem mbiReport;
+    @FXML
+    private MenuItem mbiAbout;
+    @FXML
+    private VBox vbTable;
+    @FXML
+    private Label lblTransactionDate;
+    @FXML
+    private Label lblTransactionDescription;
+    @FXML
+    private Label lblTransactionBalance;
+    @FXML
+    private Label lblTransactionType;
+    @FXML
+    private Label lblTransactionAmount;
+    @FXML
+    private Label lblFrom;
+    @FXML
+    private Label lblTo;
     @FXML
     private TabPane tabs;
     @FXML
@@ -137,13 +172,13 @@ public class MainWindowController extends GenericController {
     @FXML
     private RadioButton rbTransfers;
     @FXML
-    private RadioButton rbRecent;
+    private RadioButton rbAny;
     @FXML
     private RadioButton rbToday;
     @FXML
-    private RadioButton rbLastWeek;
+    private RadioButton rbThisWeek;
     @FXML
-    private RadioButton rbLastMonth;
+    private RadioButton rbThisMonth;
     @FXML
     private RadioButton rbBetweenDates;
     @FXML
@@ -155,41 +190,50 @@ public class MainWindowController extends GenericController {
     
     private ToggleGroup toggleTransactionType;
     private ToggleGroup toggleTransactionDate;
-    private static final String BTN_LABEL_BACK = "Back";
-    private static final String BTN_LABEL_DETAIL = "Detail";
-    private ObservableList<AccountBean> accounts;
-    private ObservableList<TransactionBean> transactions;
+    private ObservableList<AccountBean> accountsData;
+    private FilteredList<TransactionBean> transactionsData;
+    
+    private static final int ITEMS_PER_PAGE = 13;
+    private static final int MAX_PAGE_INDICATOR = 5;
     
     public void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Login Window");
-
+            
             // Set scene
             Scene scene = new Scene(root);
             stage = new Stage();
             stage.setScene(scene);
-
+            
             // Set stage properties
             stage.setTitle("Main Window");
             stage.setResizable(false);
             stage.initStyle(StageStyle.DECORATED);
-
+            
             // On showing listener
             stage.setOnShowing(this::handleWindowShowing);
             
             // Initialize toggleGroups
             toggleTransactionType = new ToggleGroup();
+            toggleTransactionType.selectedToggleProperty()
+                    .addListener(this::handleTransactionFilters);
             rbAll.setToggleGroup(toggleTransactionType);
             rbTransfers.setToggleGroup(toggleTransactionType);
             rbDeposits.setToggleGroup(toggleTransactionType);
             rbPayments.setToggleGroup(toggleTransactionType);
             
             toggleTransactionDate = new ToggleGroup();
-            rbRecent.setToggleGroup(toggleTransactionDate);
-            rbLastMonth.setToggleGroup(toggleTransactionDate);
-            rbLastWeek.setToggleGroup(toggleTransactionDate);
+            toggleTransactionDate.selectedToggleProperty()
+                    .addListener(this::handleTransactionFilters);
+            rbAny.setToggleGroup(toggleTransactionDate);
+            rbThisMonth.setToggleGroup(toggleTransactionDate);
+            rbThisWeek.setToggleGroup(toggleTransactionDate);
             rbToday.setToggleGroup(toggleTransactionDate);
             rbBetweenDates.setToggleGroup(toggleTransactionDate);
+            
+            // DatePickers
+            dpDateFrom.valueProperty().addListener(this::handleDatePickers);
+            dpDateTo.valueProperty().addListener(this::handleDatePickers);
             
             // Tabs
             tabDeposits.setOnSelectionChanged(this::handleDepositTab);
@@ -203,28 +247,66 @@ public class MainWindowController extends GenericController {
             
             // Set accounts combo data model
             CustomerBean activeUser = (CustomerBean)session.get("activeUser");
-            accounts = 
-                    FXCollections.observableArrayList(manager.getCustomerAccounts(activeUser.getId().toString()));
-            cbAccountSelection.setItems(accounts);
+            accountsData =
+                    FXCollections.observableArrayList(
+                            manager.getCustomerAccounts(activeUser.getId().toString())
+                    );
+            cbAccountSelection.setItems(accountsData);
             cbAccountSelection.valueProperty().addListener(this::handleAccountChange);
-
+            
             // Graphical node listeners
             btnExit.setOnAction(this::handleExitBtn);
+            btnExit.setMnemonicParsing(true);
+            btnExit.setText("_Exit");
+            btnExit.setTooltip(new Tooltip("Press to exit the application"));
+            
             btnBack.setOnAction(this::handleBackBtn);
+            btnBack.setMnemonicParsing(true);
+            btnBack.setText("_Back");
+            btnBack.setTooltip(new Tooltip("Press to hide transaction details"));
+            
             btnDepositClear.setOnAction(this::handleDepositClearBtn);
+            btnDepositClear.setMnemonicParsing(true);
+            btnDepositClear.setText("_Clear");
+            btnDepositClear.setTooltip(new Tooltip("Press to clear the fields"));
+            
             btnDepositSubmit.setOnAction(this::handleDepositSubmitBtn);
+            btnDepositSubmit.setMnemonicParsing(true);
+            btnDepositSubmit.setText("_Submit");
+            btnDepositSubmit.setTooltip(new Tooltip("Press to make a deposit"));
+            
             btnPaymentClear.setOnAction(this::handlePaymentClearBtn);
+            btnPaymentClear.setMnemonicParsing(true);
+            btnPaymentClear.setText("_Clear");
+            btnPaymentClear.setTooltip(new Tooltip("Press to clear the fields"));
+            
             btnPaymentSubmit.setOnAction(this::handlePaymentSubmitBtn);
+            btnPaymentSubmit.setMnemonicParsing(true);
+            btnPaymentSubmit.setText("_Submit");
+            btnPaymentSubmit.setTooltip(new Tooltip("Press to make a payment"));
+            
             btnTransferClear.setOnAction(this::handleTransferClearBtn);
+            btnTransferClear.setMnemonicParsing(true);
+            btnTransferClear.setText("_Clear");
+            btnTransferClear.setTooltip(new Tooltip("Press to clear the fields"));
+            
             btnTransferSubmit.setOnAction(this::handleTransferSubmitBtn);
+            btnTransferSubmit.setMnemonicParsing(true);
+            btnTransferSubmit.setText("_Submit");
+            btnTransferSubmit.setTooltip(new Tooltip("Press to make a transfer"));
+            
             miSignOut.setOnAction(this::handleSignOut);
-
+            mbiSignOut.setOnAction(this::handleSignOut);
+            mbiClose.setOnAction(this::handleExitBtn);
+            mbiHelp.setOnAction(this::handleHelp);
+            mbiAbout.setOnAction(this::handleAbout);
+            mbiReport.setOnAction(this::handleReport);
+            
             tfDepositAmount.textProperty().addListener(this::handleDepositFields);
             tfDepositAmount.textProperty().addListener(this::checkAmountNumeric);
             tfDepositDescription.textProperty().addListener(this::handleDepositFields);
             tfPaymentAmount.textProperty().addListener(this::handlePaymentFields);
             tfPaymentAmount.textProperty().addListener(this::checkAmountNumeric);
-            //tfPaymentAmount.focusedProperty().addListener(this::handlePaymentAmountFocus);
             tfPaymentDescription.textProperty().addListener(this::handlePaymentFields);
             tfTransferAmount.textProperty().addListener(this::handleTransferFields);
             tfTransferAmount.textProperty().addListener(this::checkAmountNumeric);
@@ -235,83 +317,188 @@ public class MainWindowController extends GenericController {
             tfTransferRecipientName.textProperty().addListener(this::handleTransferFields);
             
             // Transaction table
-            tcAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            tcBalance.setCellValueFactory(new PropertyValueFactory<>("balance"));
+            tvTransactions.getSelectionModel().selectedItemProperty().addListener(this::handleTableSelection);
+            tvTransactions.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            tvTransactions.setPlaceholder(new Label("No transactions to show"));
+            tcAmount.setCellValueFactory(
+                    new Callback<CellDataFeatures<TransactionBean, String>, ObservableValue<String>>(){
+                        @Override
+                        public ObservableValue<String> call(CellDataFeatures<TransactionBean, String> param) {
+                            return param.getValue().getSignedAmount();
+                        }
+                        
+                    });
+            tcBalance.setCellValueFactory(new Callback<CellDataFeatures<TransactionBean, String>, ObservableValue<String>>(){
+                        @Override
+                        public ObservableValue<String> call(CellDataFeatures<TransactionBean, String> param) {
+                            return param.getValue().getFormattedBalance();
+                        }
+                    });
             tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tcDate.setCellValueFactory(
-                    new Callback<TableColumn.CellDataFeatures<TransactionBean, String>, ObservableValue<String>>() {
-                @Override
-                public ObservableValue<String> call(CellDataFeatures<TransactionBean, String> param) {
-                    return param.getValue().getFormattedDate();
-                }
-            });
+                    new Callback<CellDataFeatures<TransactionBean, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(CellDataFeatures<TransactionBean, String> param) {
+                            return param.getValue().getFormattedDate();
+                        }
+                    });
+            pagTransactions.setPageFactory(this::createPage);
             
             // Show stage
             stage.show();
         } catch (Exception e) {
-            showErrorAlert("Error");
+            showErrorAlert("Error here");
+            e.printStackTrace();
         }
     }
     public void handleWindowShowing(WindowEvent event) {
+        // Default radios
+        rbAll.setSelected(true);
+        rbAny.setSelected(true);
         // Tab by default
         tabs.getSelectionModel().select(tabPayments);
         // First account by default
         cbAccountSelection.getSelectionModel().selectFirst();
         updateBalance(new BigDecimal(0));
-        // Disable payment buttons
+        // Disable buttons
         btnPaymentClear.setDisable(true);
         btnPaymentSubmit.setDisable(true);
+        btnTransferClear.setDisable(true);
+        btnTransferSubmit.setDisable(true);
+        btnDepositClear.setDisable(true);
+        btnDepositSubmit.setDisable(true);
         // MenuButton
         menuButton.setText(((CustomerBean)session.get("activeUser")).getFullName());
         // Details/Back button
-        btnBack.setText(BTN_LABEL_DETAIL);
-        btnBack.setDisable(true);
+        btnBack.setVisible(false);
         // Disable unimplemented fields
         tfTransferDescriptionRecipient.setDisable(true);
         tfTransferPayerName.setDisable(true);
         tfTransferRecipientName.setDisable(true);
         // Detalle de página de transacciones
         vbTransactionDetails.setVisible(false);
+        // DatePicker
+        makeDatepickersVisible(false);
+        // Pagination max page indicator
+        pagTransactions.setMaxPageIndicatorCount(MAX_PAGE_INDICATOR);
         // Set focus
         Platform.runLater(()->tfPaymentAmount.requestFocus());
+    }
+    
+    public void handleAbout(ActionEvent event) {
+        
+    }
+    
+    public void handleReport(ActionEvent event) {
+        
+    } 
+    
+    public void handleHelp(ActionEvent event) {
+        
+    }
+    
+    // TABLE AND PAGINATION
+    public void handleTableSelection(ObservableValue observable, Object oldValue, Object newValue) {
+        vbTransactionFilters.setVisible(false);
+        vbTransactionDetails.setVisible(true);
+        if (newValue != null) {
+            vbTransactionFilters.setVisible(false);
+            vbTransactionDetails.setVisible(true);
+            TransactionBean transaction = (TransactionBean) newValue;
+            System.out.println(transaction);
+            lblTransactionBalance.setText(transaction.getFormattedBalance().get());
+            lblTransactionAmount.setText(transaction.getSignedAmount().get());
+            lblTransactionDate.setText(transaction.getFormattedDate().get());
+            lblTransactionDescription.setText(transaction.getDescription());
+            lblTransactionType.setText(transaction.getType().name());
+            btnBack.setVisible(true);
+        }
+    }
+    
+    public Node createPage(int pageIndex) {
+        System.out.println("Now");
+        if (transactionsData != null) {
+            int fromIndex = pageIndex * ITEMS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, transactionsData.size());
+            tvTransactions.setItems(FXCollections.observableArrayList(transactionsData.subList(fromIndex, toIndex)));
+            return new BorderPane(tvTransactions);
+        }
+        return new BorderPane();
+    }
+
+    // DATEPICKERS
+    public void handleDatePickers(ObservableValue observable, Object oldValue, Object newValue) {
+        if (rbBetweenDates.isSelected() && dpDateFrom.getValue() != null && dpDateTo.getValue() != null) {
+            if (transactionsData != null) {
+                transactionsData.setPredicate(
+                    getPredicate(getTransactionType(), getTransactionDate(true))
+                );
+                setPagination();
+                pagTransactions.setPageFactory(this::createPage);
+            }
+        }
+    }
+    
+    // TRANSACTIONS FILTERS
+    public void handleTransactionFilters(ObservableValue observable, Object oldValue, Object newValue) {
+        if (rbBetweenDates.isSelected())
+            makeDatepickersVisible(true);
+        else {
+            makeDatepickersVisible(false);
+            if (transactionsData != null) {
+                transactionsData.setPredicate(
+                        getPredicate(getTransactionType(), getTransactionDate(false))
+                );
+                setPagination();
+                pagTransactions.setPageFactory(this::createPage);
+            }
+        }
     }
     
     // TAB SELECTION
     public void handleDepositTab(Event event) {
         if (!tabDeposits.isSelected())
             clearDepositFields();
-        else 
+        else
             Platform.runLater(()->tfDepositAmount.requestFocus());
     }
     public void handlePaymentTab(Event event) {
         if (!tabPayments.isSelected())
             clearPaymentFields();
-        else 
+        else
             Platform.runLater(()->tfPaymentAmount.requestFocus());
     }
     public void handleTransferTab(Event event) {
         if (!tabTransfers.isSelected())
             clearTransferFields();
-        else 
+        else
             Platform.runLater(()->tfTransferAmount.requestFocus());
     }
-    
     public void handleTransactionsTab(Event event) {
-        if (!tabTransactions.isSelected()) {
-            if (transactions != null) transactions.clear();
-        }
-        else {
+        if (tabTransactions.isSelected()) {
             try {
                 System.out.println("Transaction Tab selected");
-                AccountBean currentAccount = 
+                AccountBean currentAccount =
                         (AccountBean) cbAccountSelection.getSelectionModel().getSelectedItem();
-                transactions = 
-                        FXCollections.observableArrayList(manager.getAccountTransactions(currentAccount.getId().toString()));
-                tvTransactions.setItems(transactions);
+                transactionsData = new FilteredList<> (
+                        FXCollections.observableArrayList(manager.getAccountTransactions(currentAccount.getId().toString())), predicate->true
+                );
+                setPagination();
+                if (!rbAll.isSelected())
+                    rbAll.setSelected(true);
+                if (!rbAny.isSelected())
+                    rbAny.setSelected(true);
             } catch (ManagerException e) {
                 showErrorAlert(e.getMessage());
             }
         }
+    }
+
+    private void setPagination() {
+        System.out.println("setPagination");
+        pagTransactions.setPageCount(transactionsData.size()/ITEMS_PER_PAGE+1);
+        pagTransactions.setCurrentPageIndex(0);
+        vbTable.getChildren().add(new BorderPane(pagTransactions));
     }
     
     // BUTTON HANDLERS
@@ -319,7 +506,10 @@ public class MainWindowController extends GenericController {
         Platform.exit();
     }
     public void handleBackBtn(ActionEvent event) {
-        
+        tvTransactions.getSelectionModel().clearSelection();
+        btnBack.setVisible(false);
+        vbTransactionDetails.setVisible(false);
+        vbTransactionFilters.setVisible(true);
     }
     public void handleDepositClearBtn(ActionEvent event) {
         clearDepositFields();
@@ -338,10 +528,9 @@ public class MainWindowController extends GenericController {
             tfDepositAmount.requestFocus();
         } catch (ManagerException e) {
             showErrorAlert(e.getMessage());
-            e.printStackTrace();
+            clearDepositFields();
         } catch (Exception e) {
             showErrorAlert("An error ocurred");
-            e.printStackTrace();
         }
     }
     public void handlePaymentClearBtn(ActionEvent event) {
@@ -360,10 +549,9 @@ public class MainWindowController extends GenericController {
             clearPaymentFields();
         } catch (ManagerException e) {
             showErrorAlert(e.getMessage());
-            e.printStackTrace();
+            clearPaymentFields();
         } catch (Exception e) {
             showErrorAlert("An error ocurred");
-            e.printStackTrace();
         }
     }
     public void handleTransferClearBtn(ActionEvent event) {
@@ -383,10 +571,9 @@ public class MainWindowController extends GenericController {
             clearTransferFields();
         } catch (ManagerException e) {
             showErrorAlert(e.getMessage());
-            e.printStackTrace();
+            clearTransferFields();
         } catch (Exception e) {
             showErrorAlert("An error ocurred");
-            e.printStackTrace();
         }
     }
     public void handleSignOut(ActionEvent event) {
@@ -396,7 +583,7 @@ public class MainWindowController extends GenericController {
                     getClass().getResource("/bank/management/ui/view/log_in.fxml")
             );
             Parent root = (Parent)loader.load();
-            //Get controller for graph 
+            //Get controller for graph
             LoginController loginController=
                     ((LoginController)loader.getController());
             //Set a reference in UI controller para Bussiness Logic Controllesr
@@ -419,7 +606,6 @@ public class MainWindowController extends GenericController {
             tabs.getSelectionModel().select(tabPayments);
         }
         else clearPaymentFields();
-        
     }
     
     // TEXT FIELD HANDLERS
@@ -427,6 +613,19 @@ public class MainWindowController extends GenericController {
             ObservableValue observable,
             String oldValue,
             String newValue) {
+        if (tfDepositAmount.getText().trim().length() > 0 || tfDepositDescription.getText().trim().length() > 0) {
+            if (tfDepositAmount.getText().trim().length() > 0) {
+                btnDepositClear.setDisable(false);
+                btnDepositSubmit.setDisable(false);
+            } else {
+                btnDepositClear.setDisable(false);
+                btnDepositSubmit.setDisable(true);
+            }
+        }
+        else {
+            btnDepositClear.setDisable(true);
+            btnDepositSubmit.setDisable(true);
+        }
     }
     
     public void handlePaymentFields(
@@ -444,20 +643,10 @@ public class MainWindowController extends GenericController {
         }
         else {
             btnPaymentClear.setDisable(true);
-                btnPaymentSubmit.setDisable(true);
+            btnPaymentSubmit.setDisable(true);
         }
     }
     
-    public void checkAmountNumeric(ObservableValue observable,String oldValue,String newValue) {
-        if (newValue.matches("[^0-9]")) {
-            if (tfPaymentAmount.isFocused())
-                tfPaymentAmount.setText(newValue.replaceAll("\\D+", ""));
-            else if (tfDepositAmount.isFocused())
-                tfDepositAmount.setText(newValue.replaceAll("\\D+", ""));
-            else if (tfTransferAmount.isFocused())
-                tfTransferAmount.setText(newValue.replaceAll("\\D+", ""));
-        }
-    }
     public void handleTransferFields(
             ObservableValue observable,
             String oldValue,
@@ -477,20 +666,16 @@ public class MainWindowController extends GenericController {
         }
     }
     
-    /*
-    public void handlePaymentAmountFocus(
-            ObservableValue observable,
-            Boolean oldValue,
-            Boolean newValue) {
-        System.out.println("Focus listener");
-        if (newValue.booleanValue()) {
-            System.out.println("Focus is true");
-            tfPaymentAmount.getStyleClass().clear();
-            tfPaymentAmount.setStyle(null);
-            tfPaymentAmount.getStyleClass().addAll("text-field", "text-input");
+    public void checkAmountNumeric(ObservableValue observable,String oldValue,String newValue) {
+        if (newValue.matches("[^0-9]")) {
+            if (tfPaymentAmount.isFocused())
+                tfPaymentAmount.setText(newValue.replaceAll("\\D+", ""));
+            else if (tfDepositAmount.isFocused())
+                tfDepositAmount.setText(newValue.replaceAll("\\D+", ""));
+            else if (tfTransferAmount.isFocused())
+                tfTransferAmount.setText(newValue.replaceAll("\\D+", ""));
         }
     }
-    */
     
     // PRIVATE METHODS
     public void clearPaymentFields() {
@@ -509,7 +694,7 @@ public class MainWindowController extends GenericController {
         tfTransferPayerName.setText("");
         tfTransferRecipientName.setText("");
     }
-
+    
     private void updateBalance(BigDecimal amount) {
         AccountBean currentAccount = (AccountBean)cbAccountSelection
                 .getSelectionModel()
@@ -522,5 +707,74 @@ public class MainWindowController extends GenericController {
         DecimalFormat df = new DecimalFormat("#.00");
         String balanceString = df.format(balance);
         lblAccountBalance.setText(String.format("%s €", balanceString));
+    }
+    
+    private Predicate<TransactionBean> getPredicate(TransactionType type, Map dates) {
+        return transaction ->
+                (type == null || transaction.getType().name().equals(type.name()))
+                        && (dates == null
+                                || (transaction.getTimeStamp().toInstant().isAfter(((LocalDate)dates.get("dateFrom")).atStartOfDay().toInstant(OffsetDateTime.now().getOffset()))
+                                        && transaction.getTimeStamp().toInstant().isBefore(((LocalDate)dates.get("dateTo")).atStartOfDay().toInstant(OffsetDateTime.now().getOffset()))));
+    }
+    
+    private TransactionType getTransactionType() {
+        RadioButton selectedRb = (RadioButton) toggleTransactionType.getSelectedToggle();
+        TransactionType type = null;
+        if (selectedRb == rbDeposits)
+            type = TransactionType.DEPOSIT;
+        else if (selectedRb == rbTransfers)
+            type = TransactionType.TRANSFER;
+        else if (selectedRb == rbPayments)
+            type = TransactionType.PAYMENT;
+        return type;
+    }
+    
+    private Map getTransactionDate(boolean fromDatePicker) {
+        Map dates = null;
+        ZoneId zone = ZoneId.systemDefault();
+        if (rbThisWeek.isSelected()) {
+            DayOfWeek first = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+            DayOfWeek last = DayOfWeek.of(((first.getValue() + 5) % DayOfWeek.values().length) + 1);
+            LocalDate firstThisWeek = 
+                    LocalDate.now(zone).with(TemporalAdjusters.previousOrSame(first)).minusDays(1);
+            LocalDate lastThisWeek = 
+                    LocalDate.now(zone).with(TemporalAdjusters.nextOrSame(last)).plusDays(1);
+            System.out.println(firstThisWeek);
+            System.out.println(lastThisWeek);
+            dates = fillMap(dates, firstThisWeek, lastThisWeek);
+        } else if (rbThisMonth.isSelected()) {
+            LocalDate firstThisMonth = 
+                    LocalDate.now(zone).with(TemporalAdjusters.firstDayOfMonth()).minusDays(1);
+            LocalDate lastThisMonth = 
+                    LocalDate.now(zone).with(TemporalAdjusters.lastDayOfMonth()).plusDays(1);
+            dates = fillMap(dates, firstThisMonth, lastThisMonth);
+        } else if (rbToday.isSelected()) {
+            LocalDate todayFrom = LocalDate.now(zone).minusDays(1);
+            LocalDate todayTo = LocalDate.now(zone).plusDays(1);
+            dates = fillMap(dates, todayFrom, todayTo);
+        } else if (rbBetweenDates.isSelected() && fromDatePicker) {
+            LocalDate dateFrom = dpDateFrom.getValue().minusDays(1);
+            LocalDate dateTo = dpDateTo.getValue().plusDays(1);
+            dates = fillMap(dates, dateFrom, dateTo);
+        }
+        return dates;
+    }
+
+    private Map fillMap(Map dates, LocalDate todayFrom, LocalDate todayTo) {
+        dates = new HashMap();
+        dates.put("dateFrom", todayFrom);
+        dates.put("dateTo", todayTo);
+        return dates;
+    }
+    
+    private void makeDatepickersVisible(boolean visible) {
+        dpDateFrom.setVisible(visible);
+        dpDateTo.setVisible(visible);
+        lblFrom.setVisible(visible);
+        lblTo.setVisible(visible);
+        if (!visible) {
+            dpDateFrom.setValue(null);
+            dpDateTo.setValue(null);
+        }
     }
 }
