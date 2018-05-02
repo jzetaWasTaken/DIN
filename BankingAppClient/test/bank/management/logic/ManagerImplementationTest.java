@@ -166,19 +166,19 @@ public class ManagerImplementationTest {
     public void testCreateCustomer() throws Exception {
         System.out.println("createCustomer");
         CredentialBean credential = new CredentialBean();
-        credential.setLogin("jzaballa");
-        credential.setPassword("jzaballa");
+        credential.setLogin("javiuri");
+        credential.setPassword("javiuri");
         CustomerBean customer = new CustomerBean();
         customer.setCredentials(credential);
         customer.setBirthDate(new Date());
-        customer.setCity("Leioa");
-        customer.setEmail("jzaballa@test.org");
-        customer.setFirstName("Jon");
-        customer.setLastName("ZZ");
-        customer.setNation("Basque");
-        customer.setPhone("789456123");
+        customer.setCity("Bilbao");
+        customer.setEmail("javiuri@test.org");
+        customer.setFirstName("Javier");
+        customer.setLastName("Martín Uría");
+        customer.setNation("Spain");
+        customer.setPhone("789456124");
         customer.setStreet("Kalea street");
-        customer.setZip("54444");
+        customer.setZip("54443");
         ManagerImplementation instance = new ManagerImplementation();
         String result = instance.createCustomer(customer);
         assertNotNull(result);
@@ -188,18 +188,19 @@ public class ManagerImplementationTest {
     /**
      * Test of createAccount method, of class ManagerImplementation.
      */
-    @Ignore
+    //@Ignore
     @Test
     public void testCreateAccount() throws Exception {
         System.out.println("createAccount");
         ManagerImplementation instance = new ManagerImplementation();
         AccountBean account = new AccountBean();
-        account.setAccountNumber("4");
-        account.setBalance(new BigDecimal(1000));
-        account.setBeginBalance(new BigDecimal(1000));
-        account.setDescription("My account 4");
-        account.setType(AccountType.SAVINGS);
-        CustomerBean customer = instance.getCustomer("jzaballa").get(0);
+        account.setAccountNumber("3");
+        account.setBalance(new BigDecimal(5000));
+        account.setBeginBalance(new BigDecimal(500));
+        //account.setCreditLine(new BigDecimal(100000));
+        account.setDescription("Javi's account 1");
+        account.setType(AccountType.CHECK);
+        CustomerBean customer = instance.getCustomer("javiuri").get(0);
         if (customer.getAccounts() != null) customer.getAccounts().add(account);
         else customer.setAccounts(new ArrayList<>(Arrays.asList(account)));
         boolean result = instance.updateCustomer(customer);
@@ -324,7 +325,7 @@ public class ManagerImplementationTest {
     /**
      * Test of deleteCustomer method, of class ManagerImplementation.
      */
-    //@Ignore
+    @Ignore
     @Test
     public void testDeleteCustomer() throws Exception {
         System.out.println("deleteCustomer");

@@ -5,6 +5,8 @@
  */
 package bank.management;
 
+import bank.management.logic.Manager;
+import bank.management.logic.ManagerFactory;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,22 +22,24 @@ import java.io.IOException;
 public class BankingApplication extends Application {
     
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("UI/view/log_in.fxml"));
-        Parent root = (Parent) loader.load();
-
-        LoginController controller = (LoginController)loader.getController();
-        controller.setStage(stage);
-        
-        controller.initStage(root);
-        
-        //Parent root = FXMLLoader.load(getClass().getResource());
-        
-        //Scene scene = new Scene(root);
-        
-        //stage.setScene(scene);
-        //stage.show();
-        
+    public void start(Stage primaryStage) throws Exception {
+        //Create Bussines Logic Controller to be passed to UI controllers
+        Manager bussinessLogicController= ManagerFactory.getManager();
+        //Load node graph from fxml file
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("ui/view/log_in.fxml")
+        );
+        Parent root = (Parent)loader.load();
+        //Get controller for graph 
+        LoginController primaryStageController=
+                ((LoginController)loader.getController());
+        //Set a reference in UI controller para Bussiness Logic Controllesr
+        primaryStageController.setUsersManager(bussinessLogicController);
+        //Set a reference for Stage
+        primaryStageController.setSession(bussinessLogicController.getSession());
+        primaryStageController.setStage(primaryStage);
+        //Initializes primary stage
+        primaryStageController.initStage(root);
     }
 
     /**

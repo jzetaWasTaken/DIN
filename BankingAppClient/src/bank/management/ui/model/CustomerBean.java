@@ -267,6 +267,10 @@ public class CustomerBean implements Serializable {
         this.accounts.set(accounts);
     }
     
+    public String getFullName() {
+        return String.format("%s %s", this.firstName.get(), this.lastName.get());
+    }
+    
     /**
      * Retrieves objects hash code.
      * 

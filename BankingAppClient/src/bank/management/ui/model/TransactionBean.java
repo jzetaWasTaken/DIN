@@ -6,10 +6,13 @@
 package bank.management.ui.model;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -136,5 +139,11 @@ public class TransactionBean {
     @Override
     public String toString() {
         return "bank.management.ui.model.TransactionBean[id=" + this.getId() + " ]";
+    }
+
+    public StringProperty getFormattedDate() {
+        return new SimpleStringProperty(
+                new SimpleDateFormat("yyy-mm-dd").format(this.getTimeStamp())
+        );
     }
 }

@@ -11,7 +11,9 @@ import bank.management.rest.BankingRESTClient;
 import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
 import bank.management.ui.model.TransactionBean;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -22,6 +24,7 @@ import javax.ws.rs.core.GenericType;
  */
 public class ManagerImplementation implements Manager {
     
+    private static final Map SESSION = new HashMap<>();
     private final BankingRESTClient restClient;
     private static final Logger LOG = 
             Logger.getLogger(ManagerImplementation.class.getName());
@@ -324,5 +327,10 @@ public class ManagerImplementation implements Manager {
         }
         LOG.info("Account deleted");
         return true;
+    }
+    
+    @Override 
+    public Map getSession() {
+        return this.SESSION;
     }
 }

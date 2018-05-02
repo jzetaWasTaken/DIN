@@ -4,10 +4,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -24,11 +27,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.DatePicker?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gestion_bancaria.UI.controller.MainWindowController">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bank.management.ui.controller.MainWindowController">
     <children>
         <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="1024.0">
             <children>
@@ -45,14 +45,14 @@
                                     </HBox.margin>
                                 </Label>
                                 <ComboBox fx:id="cbAccountSelection" prefHeight="26.0" prefWidth="315.0" promptText="Select your account" />
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2.536,59 €" textAlignment="RIGHT" wrappingWidth="104.7294921875">
+                                <Text fx:id="lblAccountBalance" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" wrappingWidth="110.0">
                                     <font>
                                         <Font name="Lucida Sans Demibold" size="13.0" />
                                     </font>
                                 </Text>
                                 <HBox alignment="CENTER_RIGHT" prefHeight="59.0" prefWidth="501.0">
                                     <children>
-                                        <MenuButton fx:id="menuButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0" text="user_name">
+                                        <MenuButton fx:id="menuButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0">
                                             <items>
                                                 <MenuItem fx:id="miSignOut" mnemonicParsing="false" text="Sign out" />
                                             </items>
@@ -67,13 +67,13 @@
                                 <Insets bottom="10.0" />
                             </VBox.margin>
                         </HBox>
-                        <TabPane prefHeight="464.0" prefWidth="1004.0" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane fx:id="tabs" prefHeight="464.0" prefWidth="1004.0" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab text="Payments">
+                                <Tab fx:id="tabPayments" text="Payments">
                                     <content>
                                         <AnchorPane prefHeight="431.0" prefWidth="800.0">
                                             <children>
-                                                <GridPane hgap="20.0" vgap="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="30.0">
+                                                <GridPane hgap="20.0" vgap="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="100.0">
                                                     <columnConstraints>
                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -81,25 +81,12 @@
                                                     <rowConstraints>
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
-                                                        <TextField fx:id="tfPaymentAmount" prefHeight="26.0" prefWidth="182.0" promptText="Payment amount (€)" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                        <TextArea fx:id="tfPaymentDescription" prefHeight="200.0" prefWidth="200.0" promptText="Payment description" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.rowSpan="2147483647" />
-                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Amount (required):" GridPane.rowIndex="4" />
-                                                        <Label alignment="CENTER_RIGHT" prefHeight="16.0" prefWidth="389.0" text="Description:" textAlignment="JUSTIFY" GridPane.rowIndex="5" />
-                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Suffix:" GridPane.rowIndex="1" />
-                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Reference (required):" GridPane.rowIndex="2" />
-                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Issuer  (required):" />
-                                                        <TextField fx:id="tfPaymentSuffix" promptText="Payment suffix" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                        <TextField fx:id="tfPaymentRecipient" promptText="Payment recipient" GridPane.columnIndex="1" />
-                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Identifier:" GridPane.rowIndex="3" />
-                                                        <TextField fx:id="tfPaymentReference" promptText="Payment reference" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                        <TextField fx:id="tfPaymentId" promptText="Payment identifier" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                        <TextField fx:id="tfPaymentAmount" prefHeight="26.0" prefWidth="182.0" promptText="Payment amount (€)" GridPane.columnIndex="1" />
+                                                        <TextArea fx:id="tfPaymentDescription" prefHeight="200.0" prefWidth="200.0" promptText="Payment description" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" />
+                                                        <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Amount (required):" />
+                                                        <Label alignment="CENTER_RIGHT" prefHeight="16.0" prefWidth="389.0" text="Description:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
                                                     </children>
                                                 </GridPane>
                                                 <ButtonBar layoutX="772.0" layoutY="353.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="200.0">
@@ -112,7 +99,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab text="Deposits">
+                                <Tab fx:id="tabDeposits" text="Deposits">
                                     <content>
                                         <AnchorPane prefHeight="431.0" prefWidth="800.0">
                                             <children>
@@ -124,13 +111,12 @@
                                                     <rowConstraints>
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
                                                         <TextField fx:id="tfDepositAmount" prefHeight="26.0" prefWidth="182.0" promptText="Deposit amount" GridPane.columnIndex="1" />
                                                         <TextArea fx:id="tfDepositDescription" prefHeight="200.0" prefWidth="200.0" promptText="Deposit description" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" />
                                                         <Label alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="397.0" text="Amount (required):" />
-                                                        <Label alignment="CENTER_RIGHT" prefHeight="16.0" prefWidth="389.0" text="Description" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
+                                                        <Label alignment="CENTER_RIGHT" prefHeight="16.0" prefWidth="389.0" text="Description:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
                                                     </children>
                                                 </GridPane>
                                                 <ButtonBar layoutX="772.0" layoutY="353.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="200.0">
@@ -143,7 +129,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab text="Transfers">
+                                <Tab fx:id="tabTransfers" text="Transfers">
                                     <content>
                                         <AnchorPane prefHeight="431.0" prefWidth="800.0">
                                             <children>
@@ -229,7 +215,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab text="Transactions">
+                                <Tab fx:id="tabTransactions" text="Transactions">
                                     <content>
                                         <AnchorPane prefHeight="431.0" prefWidth="800.0">
                                             <children>
@@ -238,16 +224,17 @@
                                                         <Button fx:id="btnBack" mnemonicParsing="false" text="Back" />
                                                     </buttons>
                                                 </ButtonBar>
-                                                <TableView maxWidth="607.0" minWidth="600.0" prefHeight="340.0" prefWidth="600.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="394.0" AnchorPane.topAnchor="10.0">
+                                                <TableView fx:id="tvTransactions" maxWidth="607.0" minWidth="600.0" prefHeight="340.0" prefWidth="600.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="394.0" AnchorPane.topAnchor="10.0">
                                                     <columns>
-                                                        <TableColumn prefWidth="100.0" text="Date" />
-                                                        <TableColumn prefWidth="250.0" text="Description" />
-                                                        <TableColumn prefWidth="100.0" text="Amount" />
-                                                        <TableColumn prefWidth="150.0" text="Balance" />
+                                                        <TableColumn fx:id="tcDate" prefWidth="100.0" text="Date" />
+                                                        <TableColumn fx:id="tcDescription" prefWidth="250.0" text="Description" />
+                                                        <TableColumn fx:id="tcAmount" prefWidth="100.0" text="Amount" />
+                                                        <TableColumn fx:id="tcBalance" prefWidth="150.0" text="Balance" />
                                                     </columns>
                                                 </TableView>
+                                                <Pagination fx:id="pagTransactions" layoutX="210.0" layoutY="354.0" pageCount="10" prefHeight="59.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" />
                                     
-                                                <VBox fx:id="vbFilters" layoutX="621.0" layoutY="10.0" prefHeight="340.0" prefWidth="374.0" style="-fx-border-style: solid; -fx-border-color: lightgrey;" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="620.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                                <VBox fx:id="vbTransactionFilters" layoutX="621.0" layoutY="10.0" prefHeight="340.0" prefWidth="374.0" style="-fx-border-style: solid; -fx-border-color: lightgrey;" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="620.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                                     <padding>
                                                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                     </padding>
@@ -263,10 +250,10 @@
                                                         </HBox>
                                                         <AnchorPane prefHeight="26.0" prefWidth="354.0">
                                                             <children>
-                                                                <RadioButton layoutX="34.0" layoutY="42.0" mnemonicParsing="false" selected="true" text="All" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
-                                                                <RadioButton layoutX="72.0" layoutY="10.0" mnemonicParsing="false" text="Payments" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
-                                                                <RadioButton layoutX="150.0" layoutY="45.0" mnemonicParsing="false" text="Deposits" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="40.0" />
-                                                                <RadioButton layoutY="45.0" mnemonicParsing="false" text="Transfers" AnchorPane.topAnchor="40.0" />
+                                                                <RadioButton fx:id="rbAll" layoutX="34.0" layoutY="42.0" mnemonicParsing="false" selected="true" text="All" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
+                                                                <RadioButton fx:id="rbPayments" layoutX="72.0" layoutY="10.0" mnemonicParsing="false" text="Payments" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
+                                                                <RadioButton fx:id="rbDeposits" layoutX="150.0" layoutY="45.0" mnemonicParsing="false" text="Deposits" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="40.0" />
+                                                                <RadioButton fx:id="rbTransfers" layoutY="45.0" mnemonicParsing="false" text="Transfers" AnchorPane.topAnchor="40.0" />
                                                             </children>
                                                             <VBox.margin>
                                                                 <Insets bottom="10.0" />
@@ -283,28 +270,28 @@
                                                         </HBox>
                                                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                                             <children>
-                                                                <RadioButton layoutY="14.0" mnemonicParsing="false" text="Recent" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
-                                                                <RadioButton layoutX="199.0" layoutY="10.0" mnemonicParsing="false" text="Today" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
-                                                                <RadioButton layoutY="61.0" mnemonicParsing="false" text="Last week" AnchorPane.topAnchor="40.0" />
-                                                                <RadioButton layoutX="200.0" layoutY="49.0" mnemonicParsing="false" text="Last month" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="40.0" />
-                                                                <RadioButton layoutX="7.0" layoutY="82.0" mnemonicParsing="false" selected="true" text="Between dates" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="70.0" />
-                                                                <DatePicker layoutX="10.0" layoutY="121.0" prefHeight="26.0" prefWidth="135.0" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="120.0" />
+                                                                <RadioButton fx:id="rbRecent" layoutY="14.0" mnemonicParsing="false" text="Recent" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
+                                                                <RadioButton fx:id="rbToday" layoutX="199.0" layoutY="10.0" mnemonicParsing="false" text="Today" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
+                                                                <RadioButton fx:id="rbLastWeek" layoutY="61.0" mnemonicParsing="false" text="Last week" AnchorPane.topAnchor="40.0" />
+                                                                <RadioButton fx:id="rbLastMonth" layoutX="200.0" layoutY="49.0" mnemonicParsing="false" text="Last month" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="40.0" />
+                                                                <RadioButton fx:id="rbBetweenDates" layoutX="7.0" layoutY="82.0" mnemonicParsing="false" selected="true" text="Between dates" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="70.0" />
+                                                                <DatePicker fx:id="dpDateFrom" layoutX="10.0" layoutY="121.0" prefHeight="26.0" prefWidth="135.0" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="120.0" />
                                                                 <Label layoutY="125.0" text="From" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="125.0" />
-                                                                <DatePicker layoutX="17.0" layoutY="160.0" prefWidth="135.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="120.0" />
+                                                                <DatePicker fx:id="dpDateTo" layoutX="17.0" layoutY="160.0" prefWidth="135.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="120.0" />
                                                                 <Label layoutX="7.0" layoutY="164.0" text="To" AnchorPane.leftAnchor="180.0" AnchorPane.topAnchor="125.0" />
                                                             </children>
                                                         </AnchorPane>
                                                     </children>
                                                 </VBox>
                                     
-                                                <VBox layoutX="621.0" layoutY="10.0" prefHeight="340.0" prefWidth="374.0" style="-fx-background-color: lightgrey;" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="620.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                                <VBox fx:id="vbTransactionDetails" layoutX="621.0" layoutY="10.0" prefHeight="340.0" prefWidth="374.0" style="-fx-background-color: lightgrey;" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="620.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                                     <children>
                                                         <Label style="-fx-font-weight: bold;" text="TRANSACTION DETAILS">
                                                             <VBox.margin>
                                                                 <Insets bottom="5.0" />
                                                             </VBox.margin>
                                                         </Label>
-                                                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                                                        <StackPane prefHeight="301.0" prefWidth="354.0">
                                                             <padding>
                                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                             </padding>
@@ -315,80 +302,35 @@
                                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                                     </columnConstraints>
                                                                     <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                     </rowConstraints>
                                                                     <children>
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Date/time:" textAlignment="JUSTIFY" />
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Description:" textAlignment="JUSTIFY" GridPane.rowIndex="2" />
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Amount:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
-                                                                        <Label text="01/25/2017 10:26:57" GridPane.columnIndex="1" />
-                                                                        <Label text="-25 €" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                                        <Label text="Foo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Date:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
+                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Description:" textAlignment="JUSTIFY" GridPane.rowIndex="3" />
+                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Amount:" textAlignment="JUSTIFY" GridPane.rowIndex="2" />
+                                                                        <Label prefHeight="16.0" prefWidth="239.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                        <Label prefHeight="16.0" prefWidth="241.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                        <Label prefHeight="16.0" prefWidth="237.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                      <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Type:" textAlignment="JUSTIFY" />
+                                                      <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Balance:" textAlignment="JUSTIFY" GridPane.rowIndex="4" />
+                                                      <Label prefHeight="16.0" prefWidth="239.0" GridPane.columnIndex="1" />
+                                                      <Label prefHeight="16.0" prefWidth="237.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                                     </children>
                                                                 </GridPane>
                                                             </children>
                                                             <VBox.margin>
                                                                 <Insets bottom="10.0" />
                                                             </VBox.margin>
-                                                        </StackPane>
-                                                        <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: white;">
-                                                            <padding>
-                                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                            </padding>
-                                                            <children>
-                                                                <GridPane hgap="5.0" vgap="5.0">
-                                                                    <columnConstraints>
-                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="0.0" prefWidth="100.0" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                                    </columnConstraints>
-                                                                    <rowConstraints>
-                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                                    </rowConstraints>
-                                                                    <children>
-                                                                        <Label alignment="TOP_LEFT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="RECIPIENT" textAlignment="JUSTIFY" />
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Account:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Full name:" textAlignment="JUSTIFY" GridPane.rowIndex="2" />
-                                                                        <Label text="ES45 0000 0000 0000 0000 0000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                                        <Label text="Fridge Hackbeef" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                                    </children>
-                                                                </GridPane>
-                                                            </children>
-                                                            <VBox.margin>
-                                                                <Insets bottom="10.0" />
-                                                            </VBox.margin>
-                                                        </StackPane>
-                                                        <StackPane prefHeight="90.0" prefWidth="200.0" style="-fx-background-color: white;">
-                                                            <padding>
-                                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                            </padding>
-                                                            <children>
-                                                                <GridPane hgap="5.0" vgap="5.0">
-                                                                    <columnConstraints>
-                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="0.0" prefWidth="100.0" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                                    </columnConstraints>
-                                                                    <rowConstraints>
-                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                                    </rowConstraints>
-                                                                    <children>
-                                                                        <Label alignment="TOP_LEFT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="PAYER" textAlignment="JUSTIFY" />
-                                                                        <Label alignment="TOP_RIGHT" prefHeight="16.0" prefWidth="178.0" style="-fx-font-weight: bold;" text="Full name:" textAlignment="JUSTIFY" GridPane.rowIndex="1" />
-                                                                        <Label text="Lizbeth Martin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                                    </children>
-                                                                </GridPane>
-                                                            </children>
                                                         </StackPane>
                                                     </children>
                                                     <padding>
                                                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                     </padding>
                                                 </VBox>
-                                                <Pagination layoutX="210.0" layoutY="354.0" pageCount="10" prefHeight="59.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" />
                                             </children>
                                         </AnchorPane>
                                     </content>
@@ -401,7 +343,7 @@
         </Pane>
         <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.rightAnchor="20.0">
             <buttons>
-                <Button mnemonicParsing="false" text="Exit" />
+                <Button fx:id="btnExit" mnemonicParsing="false" text="Exit" />
             </buttons>
         </ButtonBar>
     </children>

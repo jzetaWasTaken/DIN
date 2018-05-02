@@ -303,7 +303,7 @@ public class AccountBean implements Serializable {
      */
     @Override
     public String toString() {
-        return "bank.management.ui.model.AccountBean[ id=" + this.getId() + " ]";
+        return this.getAccountNumber().toString();
     }
     
 }

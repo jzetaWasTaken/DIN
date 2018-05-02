@@ -10,6 +10,7 @@ import bank.management.ui.model.AccountBean;
 import bank.management.ui.model.CustomerBean;
 import bank.management.ui.model.TransactionBean;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -48,4 +49,6 @@ public interface Manager {
     public boolean deleteCustomer(String customerId) throws ManagerException;
     
     public boolean deleteAccount(String accountId) throws ManagerException;
+    
+    public Map getSession();
 }
