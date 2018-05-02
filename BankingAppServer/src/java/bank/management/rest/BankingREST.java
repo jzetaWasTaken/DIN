@@ -294,7 +294,7 @@ public class BankingREST {
                     Level.INFO,
                     LOG_HEADER + ": No customers found; login: {0}",
                     login);
-            throw new CustomerException(e.getMessage(), e);
+            throw new CustomerException(e.getMessage());
         } catch (SQLException e) {
             LOGGER.severe(LOG_HEADER + ": Database error");
             System.out.println("SQL error");

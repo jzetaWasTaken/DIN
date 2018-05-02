@@ -34,7 +34,7 @@ public class CustomerExceptionMapper
     @Override
     public Response toResponse(CustomerException exception) {
         return Response.status(Response.Status.NOT_FOUND)
-                .entity(exception.getCause().getMessage())
+                .entity(exception.getMessage())
                 .build();
     }
 }
