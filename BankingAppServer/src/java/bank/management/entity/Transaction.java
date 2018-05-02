@@ -49,28 +49,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(
         name="findTransactionsByAccount",
-        query="SELECT t FROM Transaction AS t WHERE t.account.id = :accountId ORDER BY t.timeStamp",
+        query="SELECT t FROM Transaction AS t WHERE t.account.id = :accountId ORDER BY t.timeStamp DESC, t.id DESC",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findDepositsByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = bank.management.entity.TransactionType.DEPOSIT "
                 + "AND t.account.id = :accountId "
-                + "ORDER BY t.timeStamp",
+                + "ORDER BY t.timeStamp DESC, t.id DESC",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findTransfersByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = bank.management.entity.TransactionType.TRANSFER "
                 + "AND t.account.id = :accountId "
-                + "ORDER BY t.timeStamp",
+                + "ORDER BY t.timeStamp DESC, t.id DESC",
         lockMode = LockModeType.NONE),
     @NamedQuery(
         name="findPaymentsByAccount",
         query="SELECT t FROM Transaction AS t "
                 + "WHERE t.type = bank.management.entity.TransactionType.PAYMENT "
                 + "AND t.account.id = :accountId "
-                + "ORDER BY t.timeStamp",
+                + "ORDER BY t.timeStamp DESC, t.id DESC",
         lockMode = LockModeType.NONE),
 })
 @XmlRootElement(name="transaction")
