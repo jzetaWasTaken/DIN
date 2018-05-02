@@ -194,12 +194,12 @@ public class ManagerImplementationTest {
         System.out.println("createAccount");
         ManagerImplementation instance = new ManagerImplementation();
         AccountBean account = new AccountBean();
-        account.setAccountNumber("3");
+        account.setAccountNumber("44");
         account.setBalance(new BigDecimal(5000));
         account.setBeginBalance(new BigDecimal(500));
-        //account.setCreditLine(new BigDecimal(100000));
-        account.setDescription("Javi's account 1");
-        account.setType(AccountType.CHECK);
+        account.setCreditLine(new BigDecimal(100000));
+        account.setDescription("Javi's account 2");
+        account.setType(AccountType.CREDIT);
         CustomerBean customer = instance.getCustomer("javiuri").get(0);
         if (customer.getAccounts() != null) customer.getAccounts().add(account);
         else customer.setAccounts(new ArrayList<>(Arrays.asList(account)));

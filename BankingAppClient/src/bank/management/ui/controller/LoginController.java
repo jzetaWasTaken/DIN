@@ -103,9 +103,10 @@ public class LoginController extends GenericController {
             controller.setSession(session);
             controller.initStage(root);
             stage.hide();
-        } catch (ManagerException ex) {
-            showErrorAlert(ex.getMessage());
-        } catch (IOException ex) {
+        } catch (ManagerException e) {
+            showWarningAlert(e.getMessage());
+            tfPassw.setText("");
+        } catch (Exception e) {
             showErrorAlert("Error loading window");
         }
     }

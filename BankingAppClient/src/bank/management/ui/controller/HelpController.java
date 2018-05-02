@@ -34,7 +34,7 @@ public class HelpController {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.setTitle("Ayuda para la Gestion de Usuarios");
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setMinWidth(800);
         stage.setMinHeight(600);
         stage.setOnShowing(this::handleWindowShowing);

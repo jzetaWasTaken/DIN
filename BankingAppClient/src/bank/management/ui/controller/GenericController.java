@@ -7,6 +7,7 @@ package bank.management.ui.controller;
 
 import bank.management.logic.Manager;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -78,7 +79,53 @@ public abstract class GenericController {
         alert.getDialogPane().getStylesheets().add(
               getClass().getResource("").toExternalForm());
         alert.showAndWait();
-        
     }
     
+    /**
+     * Shows a message in an alert dialog.
+     * @param msg The message to be shown.
+     */
+    protected void showInfoAlert(String msg){
+        //Shows error dialog.
+        Alert alert=new Alert(Alert.AlertType.INFORMATION,
+                              msg,
+                              ButtonType.OK);
+        // TODO add css
+        alert.getDialogPane().getStylesheets().add(
+              getClass().getResource("").toExternalForm());
+        alert.showAndWait();
+    }
+    
+    /**
+     * Shows a warning message in an alert dialog.
+     * @param warningMsg The warning message to be shown.
+     */
+    protected void showWarningAlert(String warningMsg){
+        //Shows error dialog.
+        Alert alert=new Alert(Alert.AlertType.WARNING,
+                              warningMsg,
+                              ButtonType.OK);
+        // TODO add css
+        alert.getDialogPane().getStylesheets().add(
+              getClass().getResource("").toExternalForm());
+        alert.showAndWait();
+    }
+    
+    /**
+     * Shows a message in an alert dialog.
+     * @param confirmMsg The confirmation message to be shown.
+     */
+    protected Optional<ButtonType> showConfirmationAlert(String confirmMsg){
+        //Shows error dialog.
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
+                              confirmMsg,
+                              ButtonType.YES,
+                              ButtonType.CANCEL
+        );
+        // TODO add css
+        alert.getDialogPane().getStylesheets().add(
+              getClass().getResource("").toExternalForm());
+        final Optional<ButtonType> result = alert.showAndWait();
+        return result;
+    }
 }

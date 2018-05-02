@@ -163,7 +163,7 @@ public class BankingRESTClient {
             if (response.getStatus() == Status.OK.getStatusCode()) 
                 entity = response.readEntity(responseType);
             else
-                throw new BankServerException(response.getStatusInfo().toString());
+                throw new BankServerException(response.readEntity(String.class));
         } finally {
             response.close();
         }

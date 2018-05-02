@@ -21,9 +21,13 @@ import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -37,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -61,6 +66,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -198,7 +210,7 @@ public class MainWindowController extends GenericController {
     
     public void initStage(Parent root) {
         try {
-            LOGGER.info("Initializing Login Window");
+            LOGGER.info("Initializing Main Window");
             
             // Set scene
             Scene scene = new Scene(root);
@@ -206,7 +218,7 @@ public class MainWindowController extends GenericController {
             stage.setScene(scene);
             
             // Set stage properties
-            stage.setTitle("Main Window");
+            stage.setTitle("TrutxaBank");
             stage.setResizable(false);
             stage.initStyle(StageStyle.DECORATED);
             
@@ -347,10 +359,10 @@ public class MainWindowController extends GenericController {
             // Show stage
             stage.show();
         } catch (Exception e) {
-            showErrorAlert("Error here");
-            e.printStackTrace();
+            showErrorAlert("Error loading window");
         }
     }
+    
     public void handleWindowShowing(WindowEvent event) {
         // Default radios
         rbAll.setSelected(true);
@@ -375,6 +387,7 @@ public class MainWindowController extends GenericController {
         tfTransferDescriptionRecipient.setDisable(true);
         tfTransferPayerName.setDisable(true);
         tfTransferRecipientName.setDisable(true);
+        mbiAbout.setDisable(true);
         // Detalle de página de transacciones
         vbTransactionDetails.setVisible(false);
         // DatePicker
@@ -390,11 +403,43 @@ public class MainWindowController extends GenericController {
     }
     
     public void handleReport(ActionEvent event) {
-        
+        try {
+            JasperReport report =
+                    JasperCompileManager.compileReport(
+                            getClass().getResourceAsStream("/bank/management/ui/report/transactionsreport.jrxml")
+                    );
+            AccountBean currentAccount =
+                        (AccountBean) cbAccountSelection.getSelectionModel().getSelectedItem();
+            JRBeanCollectionDataSource dataItems=
+                    new JRBeanCollectionDataSource((List<TransactionBean>)manager.getAccountTransactions(currentAccount.getId().toString()));
+            //Map of parameter to be passed to the report
+            Map<String,Object> parameters=new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report,parameters,dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException e) {
+            showErrorAlert("Error printing report");
+        } catch (ManagerException e) {
+            showWarningAlert(e.getMessage());
+        }
     } 
     
     public void handleHelp(ActionEvent event) {
-        
+        try {
+        FXMLLoader loader=
+                new FXMLLoader(getClass().getResource("/bank/management/ui/view/help.fxml"));
+        Parent root = (Parent)loader.load();
+        HelpController helpController=
+                ((HelpController)loader.getController());
+        //Initializes and shows help stage
+        helpController.initAndShowStage(root);
+        } catch (Exception e) {
+            showErrorAlert("Error loading help window");
+        }
     }
     
     // TABLE AND PAGINATION
@@ -489,7 +534,7 @@ public class MainWindowController extends GenericController {
                 if (!rbAny.isSelected())
                     rbAny.setSelected(true);
             } catch (ManagerException e) {
-                showErrorAlert(e.getMessage());
+                showWarningAlert(e.getMessage());
             }
         }
     }
@@ -503,7 +548,8 @@ public class MainWindowController extends GenericController {
     
     // BUTTON HANDLERS
     public void handleExitBtn(ActionEvent event) {
-        Platform.exit();
+        Optional<ButtonType> result = showConfirmationAlert("Do you really want to exit?");
+        if (result.get() == ButtonType.YES) Platform.exit();
     }
     public void handleBackBtn(ActionEvent event) {
         tvTransactions.getSelectionModel().clearSelection();
@@ -522,15 +568,15 @@ public class MainWindowController extends GenericController {
             deposit.setAmount(new BigDecimal(amount));
             deposit.setDescription(tfDepositDescription.getText());
             manager.makeDeposit(deposit);
-            showErrorAlert("Deposit made");
+            showInfoAlert("Deposit made");
             updateBalance(deposit.getAmount());
             clearDepositFields();
             tfDepositAmount.requestFocus();
         } catch (ManagerException e) {
-            showErrorAlert(e.getMessage());
+            showWarningAlert(e.getMessage());
             clearDepositFields();
         } catch (Exception e) {
-            showErrorAlert("An error ocurred");
+            showErrorAlert("Unexpected error");
         }
     }
     public void handlePaymentClearBtn(ActionEvent event) {
@@ -544,14 +590,14 @@ public class MainWindowController extends GenericController {
             payment.setAmount(new BigDecimal(amount));
             payment.setDescription(tfPaymentDescription.getText());
             manager.makePayment(payment);
-            showErrorAlert("Payment made");
+            showInfoAlert("Payment made");
             updateBalance(payment.getAmount().negate());
             clearPaymentFields();
         } catch (ManagerException e) {
-            showErrorAlert(e.getMessage());
+            showWarningAlert(e.getMessage());
             clearPaymentFields();
         } catch (Exception e) {
-            showErrorAlert("An error ocurred");
+            showErrorAlert("Unexpected error");
         }
     }
     public void handleTransferClearBtn(ActionEvent event) {
@@ -566,33 +612,36 @@ public class MainWindowController extends GenericController {
             transfer.setDescription(tfTransferDescriptionPayer.getText());
             String accountTo = tfTransferIban.getText();
             manager.makeTransfer(transfer, accountTo);
-            showErrorAlert("Transfer made");
+            showInfoAlert("Transfer made");
             updateBalance(transfer.getAmount().negate());
             clearTransferFields();
         } catch (ManagerException e) {
-            showErrorAlert(e.getMessage());
+            showWarningAlert(e.getMessage());
             clearTransferFields();
         } catch (Exception e) {
-            showErrorAlert("An error ocurred");
+            showErrorAlert("Unexpected error");
         }
     }
     public void handleSignOut(ActionEvent event) {
         session.clear();
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/bank/management/ui/view/log_in.fxml")
-            );
-            Parent root = (Parent)loader.load();
-            //Get controller for graph
-            LoginController loginController=
-                    ((LoginController)loader.getController());
-            //Set a reference in UI controller para Bussiness Logic Controllesr
-            loginController.setUsersManager(manager);
-            //Set a reference for Stage
-            loginController.setSession(manager.getSession());
-            //Initializes primary stage
-            loginController.initStage(root);
-            stage.hide();
+            Optional<ButtonType> result = showConfirmationAlert("Do you really want to sign out?");
+            if (result.get() == ButtonType.YES) {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/bank/management/ui/view/log_in.fxml")
+                );
+                Parent root = (Parent)loader.load();
+                //Get controller for graph
+                LoginController loginController=
+                        ((LoginController)loader.getController());
+                //Set a reference in UI controller para Bussiness Logic Controllesr
+                loginController.setUsersManager(manager);
+                //Set a reference for Stage
+                loginController.setSession(manager.getSession());
+                //Initializes primary stage
+                loginController.initStage(root);
+                stage.hide();
+            }
         } catch (IOException e) {
             showErrorAlert("Error");
         }
